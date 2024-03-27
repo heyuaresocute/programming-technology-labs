@@ -10,11 +10,11 @@
             var hillsNumber = 0;
             var treesNumber = 0;
             var startcash = 0;
-            
+
             Console.WriteLine("Before you start, please, enter the size of your city (two numbers - columns and rows)");
             var cols = Convert.ToInt32(Console.ReadLine());
             var rows = Convert.ToInt32(Console.ReadLine());
-            
+
             Console.WriteLine("Also, please, choose the difficulty (1 - easy, 2 - normal, 3 - hard)");
             var x = Convert.ToInt32(Console.ReadLine());
             switch (x)
@@ -38,6 +38,7 @@
                     startcash = 48;
                     break;
             }
+
             var city = new City(cols, rows, swampsNumber, hillsNumber, treesNumber);
             var player = new Player(startcash);
             var opponent = new Player(startcash);
@@ -50,12 +51,12 @@
 
         private static void Start(Player player, Player opponent, City city)
         {
-            
             city.GenerateCity();
             player.PlaceUnits(city);
             opponent.PlaceUnits(city);
             var win = Win(player, opponent);
-            while (win == 2)
+            var unit = player.Units[0];
+            while (win == ContinueGame)
             {
                 city.OutputCity();
                 Console.WriteLine("Your units: ");
@@ -63,29 +64,41 @@
                 Console.WriteLine("Opponent's units: ");
                 opponent.OutputUnits();
                 var action = AskForAction();
-                var unit = AskForUnit(player.Units);
                 switch (action)
                 {
                     case 1:
+                        Console.WriteLine("Choose your unit: ");
+                        unit = AskForUnit(player.Units);
                         var direction = AskForDirection();
-                        player.Move(unit, direction, city);
+                        unit.Move(unit, direction, city);
+                        break;
+                    case 2:
+                        Console.WriteLine("Choose your unit: ");
+                        unit = AskForUnit(player.Units);
+                        Console.WriteLine("Choose your opponent's unit: ");
+                        var opponentsUnit = AskForUnit(opponent.Units);
+                        unit.DoAttack(opponentsUnit);
+                        if (!opponentsUnit.IsAlive())
+                        {
+                            opponent.RemoveUnit(opponentsUnit);
+                        }
+                        break;
+                    case 3:
                         break;
                 }
 
                 win = Win(player, opponent);
             }
 
-            var outMsg = win==1? "Congratulations":"Game over :(";
+            var outMsg = win == 1 ? "Congratulations" : "Game over :(";
             Console.WriteLine(outMsg);
-            
-
         }
 
         private static int Win(Player player, Player opponent)
         {
             return player.Units.Count == 0 ? 0 : opponent.Units.Count == 0 ? 1 : ContinueGame;
         }
-        
+
         private static string AskForDirection()
         {
             Console.WriteLine("Please, choose the direction: ");
@@ -94,45 +107,50 @@
             Console.WriteLine("r - right");
             Console.WriteLine("l - left");
             var answer = Convert.ToString(Console.ReadLine());
-            if (answer == "u" || answer == "d" || answer == "r" || answer == "l"  )
+            if (answer == "u" || answer == "d" || answer == "r" || answer == "l")
             {
                 return answer;
             }
+
             return AskForDirection();
         }
-        
+
         private static int AskForAction()
         {
-            Console.WriteLine("Choose the action: 1 - move, 2 - attack");
+            Console.WriteLine("Choose the action: 1 - move, 2 - attack, 3 - skip");
             var answer = Convert.ToInt32(Console.ReadLine());
-            if (answer == 1 || answer == 2  )
+            if (answer == 1 || answer == 2 || answer == 3)
             {
                 return answer;
             }
+
             return AskForAction();
         }
 
         private static IUnit AskForUnit(List<IUnit> units)
         {
-            Console.WriteLine("Choose your unit: ");
             for (int i = 0; i < 3; i++)
             {
                 Console.WriteLine($"{units[i].Id}. {units[i].Name}");
             }
 
             var selected = Convert.ToInt32(Console.ReadLine());
-            if (selected == 1 || selected == 2 || selected == 3)
+            switch (selected)
             {
-                switch (selected)
-                {
-                    case 1:
-                        return units[0];
-                    case 2:
-                        return units[1];
-                    case 3:
-                        return units[2];
-                }
+                case 1:
+                    return units[0];
+                case 2:
+                    return units[1];
+                case 3:
+                    return units[2];
+                case 7:
+                    return units[0];
+                case 8:
+                    return units[1];
+                case 9:
+                    return units[2];
             }
+
             return AskForUnit(units);
         }
     }

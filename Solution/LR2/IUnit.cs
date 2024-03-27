@@ -12,8 +12,9 @@ public interface IUnit
     int YСoordinate { get; set; }
     int XСoordinate { get; set; }
     int Cost { get; }
-    void DoAttack();
-    int IsAlive();
+    void Move(IUnit unit, string direction, City city);
+    void DoAttack(IUnit unit);
+    bool IsAlive();
 }
 
 public class UnitsFactory

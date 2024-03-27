@@ -4,50 +4,6 @@ public class Player(int cash)
 {
     public List<IUnit> Units { get; set; } = [];
     public int Cash { get; set; } = cash;
-
-    public void Move(IUnit unit, string direction, City city)
-    {
-        var y = unit.YСoordinate;
-        var x = unit.XСoordinate;
-        var wayRange = city.GetWayRange(direction, unit);
-        switch (direction)
-        {
-            case "u":
-                y -= wayRange;
-                break;
-            case "d":
-                y += wayRange;
-                break;
-            case "r":
-                x += wayRange;
-                break;
-            case "l":
-                x -= wayRange;
-                break;
-        }
-        if (city.CityObjects[y][x].Obj != "*")
-        {
-            switch (direction)
-            {
-                case "u":
-                    y += 1;
-                    break;
-                case "d":
-                    y -= 1;
-                    break;
-                case "r":
-                    x -= 1;
-                    break;
-                case "l":
-                    x += 1;
-                    break;
-            }
-        }
-        city.PlaceObject(unit.XСoordinate, unit.YСoordinate, "*");
-        unit.XСoordinate = x;
-        unit.YСoordinate = y;
-        city.PlaceObject(unit.XСoordinate, unit.YСoordinate, $"{unit.Id}");
-    }
     public void SelectUnits(UnitsFactory factory)
     {
         var count = 0;
@@ -101,7 +57,7 @@ public class Player(int cash)
         
     }
     
-    public void PlaceUnits(City city) // 
+    public void PlaceUnits(City city)
     {
         for (int i = 0; i < 3; i++)
         {
@@ -134,5 +90,11 @@ public class Player(int cash)
             case 9:
                 return factory.CreateHorseBow(x, y, id);
         }
+    }
+
+    public void RemoveUnit(IUnit unit)
+    {
+        Units.Remove(unit);
+        
     }
 }
