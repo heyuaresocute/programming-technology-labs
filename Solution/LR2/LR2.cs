@@ -87,11 +87,18 @@
                         break;
                 }
 
+                OpponentsStep(opponent);
+
                 win = Win(player, opponent);
             }
 
             var outMsg = win == 1 ? "Congratulations" : "Game over :(";
             Console.WriteLine(outMsg);
+        }
+
+        private static void OpponentsStep(Player opponent)
+        {
+            
         }
 
         private static int Win(Player player, Player opponent)

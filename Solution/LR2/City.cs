@@ -202,7 +202,7 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
     private static Square[][] GenerateMatrix(int cols, int rows)
     {
         Square[][] result = new Square[rows][];
-        for (int i = 0; i < rows; ++i)
+        for (var i = 0; i < rows; ++i)
             result[i] = new Square[cols];
         return result;
     }

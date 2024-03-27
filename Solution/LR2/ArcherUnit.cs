@@ -84,11 +84,29 @@ public class ArcherUnit(string name, int health, int attackNumber, int attackRan
     
     private bool CheckAvailability(IUnit victim)
     {
-        return XСoordinate - victim.XСoordinate <= AttackRange || YСoordinate - victim.YСoordinate <= AttackRange;
+        return Convert.ToInt32(GetEuclideanDistance(victim)) <= AttackRange;
     }
     
     public bool IsAlive()
     {
         return Health > 0;
+    }
+    
+    private double GetEuclideanDistance(IUnit unit)
+    {
+        int[] xArray = [XСoordinate, unit.XСoordinate];
+        int[] yArray = [YСoordinate, unit.YСoordinate];
+        var leg1 = xArray.Max() - xArray.Min();
+        var leg2 = yArray.Max() - yArray.Min();
+        if (leg1 == 0)
+        {
+            return leg2;
+        }
+
+        if (leg2 == 0)
+        {
+            return leg1;
+        }
+        return leg1 * leg1 + leg2 * leg2;
     }
 }
