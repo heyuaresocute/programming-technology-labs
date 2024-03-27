@@ -127,6 +127,7 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
 
     public void OutputCity()
     {
+        //Console.Clear();
         Console.Write("|    | ");
         for (int i = 1; i < Cols+1; i++)
         {

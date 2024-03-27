@@ -20,13 +20,6 @@ public class HorseUnit(string name, int health, int attackNumber, int attackRang
     
     public int IsAlive()
     {
-        if (Health == 0)
-        {
-            return 0;
-        }
-        else
-        {
-            return 1;
-        }
+        return Health == 0 ? 0 : 1;
     }
 }

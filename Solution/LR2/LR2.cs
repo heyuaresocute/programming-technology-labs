@@ -2,6 +2,8 @@
 {
     internal static class Lab
     {
+        private const int ContinueGame = 2;
+
         private static void Main()
         {
             var swampsNumber = 0;
@@ -72,20 +74,16 @@
 
                 win = Win(player, opponent);
             }
-            if (win == 1)
-            {
-                Console.WriteLine("Congratulations!");
-            }
 
-            if (win == 0)
-            {
-                Console.WriteLine("Game over :(");
-            }
+            var outMsg = win==1? "Congratulations":"Game over :(";
+            Console.WriteLine(outMsg);
+            
+
         }
 
         private static int Win(Player player, Player opponent)
         {
-            return player.Units.Count == 0 ? 0 : opponent.Units.Count == 0 ? 1 : 2;
+            return player.Units.Count == 0 ? 0 : opponent.Units.Count == 0 ? 1 : ContinueGame;
         }
         
         private static string AskForDirection()
