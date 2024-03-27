@@ -1,8 +1,11 @@
+using LR2.Factories;
+using LR2.Interfaces;
+
 namespace LR2;
 
 public class Player(int cash)
 {
-    public List<IUnit> Units { get; set; } = [];
+    public List<IUnit> Units { get; } = [];
     public int Cash { get; set; } = cash;
     public void SelectUnits(UnitsFactory factory, City city)
     {
@@ -61,7 +64,7 @@ public class Player(int cash)
     {
         for (int i = 0; i < 3; i++)
         {
-            city.PlaceObject(Units[i].XСoordinate, Units[i].YСoordinate, $"{Units[i].Id}");
+            city.PlaceObject(Units[i].X, Units[i].Y, $"{Units[i].Id}");
         }
     }
 
@@ -95,57 +98,20 @@ public class Player(int cash)
     public void RemoveUnit(IUnit unit, City city)
     {
         Units.Remove(unit);
-        city.PlaceObject(unit.XСoordinate, unit.YСoordinate, "*");
+        city.PlaceObject(unit.X, unit.Y, "*");
     }
 
     public IUnit[]? GetVictim(Player opponent)
     {
-        IUnit unit1 = opponent.Units[0];
-        IUnit unit2 = opponent.Units[1];
-        IUnit unit3 = opponent.Units[2];
-        if (Units[0].CheckAvailability(unit1))
+        foreach (var unit in Units)
         {
-            return [Units[0], unit1];
-        }
-
-        if (Units[0].CheckAvailability(unit2))
-        {
-            return [Units[0], unit2];
-        }
-
-        if (Units[0].CheckAvailability(unit3))
-        {
-            return [Units[0], unit3];
-        }
-
-        if (Units[1].CheckAvailability(unit1))
-        {
-            return [Units[1], unit1];
-        }
-
-        if (Units[1].CheckAvailability(unit2))
-        {
-            return [Units[1], unit2];
-        }
-
-        if (Units[1].CheckAvailability(unit3))
-        {
-            return [Units[1], unit3];
-        }
-
-        if (Units[2].CheckAvailability(unit1))
-        {
-            return [Units[2], unit1];
-        }
-
-        if (Units[2].CheckAvailability(unit2))
-        {
-            return [Units[2], unit2];
-        }
-
-        if (Units[2].CheckAvailability(unit3))
-        {
-            return [Units[2], unit3];
+            foreach (var victim in opponent.Units)
+            {
+                if (unit.CheckAvailability(victim))
+                {
+                    return [unit, victim];
+                }
+            }
         }
 
         return null;

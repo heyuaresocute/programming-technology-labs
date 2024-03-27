@@ -1,4 +1,4 @@
-namespace LR2;
+namespace LR2.Interfaces;
 
 public interface IUnit
 {
@@ -9,8 +9,8 @@ public interface IUnit
     int AttackRange { get; }
     int Defence { get; set; }
     int MovementRange { get; }
-    int YСoordinate { get; set; }
-    int XСoordinate { get; set; }
+    int Y { get; set; }
+    int X { get; set; }
     int Cost { get; }
     void Move(IUnit unit, string direction, City city);
     void DoAttack(IUnit victim);

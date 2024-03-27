@@ -1,4 +1,6 @@
-namespace LR2;
+using LR2.Interfaces;
+
+namespace LR2.Units;
 
 public class ArcherUnit(string name, int health, int attackNumber, int attackRange, int defence, int movementRange, int cost, int y, int x, int id): IUnit
 {
@@ -9,13 +11,13 @@ public class ArcherUnit(string name, int health, int attackNumber, int attackRan
     public int AttackRange { get; } = attackRange;
     public int Defence { get; set; } = defence;
     public int MovementRange { get; } = movementRange;
-    public int YСoordinate { get; set; } = y;
-    public int XСoordinate { get; set; } = x;
+    public int Y { get; set; } = y;
+    public int X { get; set; } = x;
     public int Cost { get; } = cost;
     public void Move(IUnit unit, string direction, City city)
     {
-        var y = YСoordinate;
-        var x = XСoordinate;
+        var y = Y;
+        var x = X;
         var wayRange = city.GetWayRange(direction, unit);
         switch (direction)
         {
@@ -50,10 +52,10 @@ public class ArcherUnit(string name, int health, int attackNumber, int attackRan
                     break;
             }
         }
-        city.PlaceObject(XСoordinate, YСoordinate, "*");
-        XСoordinate = x;
-        YСoordinate = y;
-        city.PlaceObject(XСoordinate, YСoordinate, $"{Id}");
+        city.PlaceObject(X, Y, "*");
+        X = x;
+        Y = y;
+        city.PlaceObject(X, Y, $"{Id}");
     }
     public void DoAttack(IUnit victim)
     {
@@ -94,8 +96,8 @@ public class ArcherUnit(string name, int health, int attackNumber, int attackRan
     
     private double GetEuclideanDistance(IUnit unit)
     {
-        var leg1 = XСoordinate - unit.XСoordinate;
-        var leg2 = YСoordinate - unit.YСoordinate;
+        var leg1 = X - unit.X;
+        var leg2 = Y - unit.Y;
         if (leg1 == 0)
         {
             return leg2;

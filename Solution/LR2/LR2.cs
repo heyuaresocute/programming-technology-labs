@@ -1,4 +1,7 @@
-﻿namespace LR2
+﻿using LR2.Factories;
+using LR2.Interfaces;
+
+namespace LR2
 {
     internal static class Lab
     {
@@ -55,7 +58,8 @@
             player.PlaceUnits(city);
             opponent.PlaceUnits(city);
             var win = Win(player, opponent);
-            var unit = player.Units[0];
+            IUnit unit;
+            string outMsg;
             while (win == ContinueGame)
             {
                 city.OutputCity();
@@ -80,19 +84,22 @@
                         unit.DoAttack(opponentsUnit);
                         if (!opponentsUnit.IsAlive())
                         {
+                            Console.WriteLine($"You killed your opponent's {opponentsUnit.Name}");
                             opponent.RemoveUnit(opponentsUnit, city);
                         }
                         break;
                     case 3:
                         break;
                 }
-
-                OpponentsStep(opponent, player, city);
-
+                win = Win(player, opponent);
+                if (win == ContinueGame)
+                {
+                    OpponentsStep(opponent, player, city);
+                }
                 win = Win(player, opponent);
             }
 
-            var outMsg = win == 1 ? "Congratulations" : "Game over :(";
+            outMsg = win == 1 ? "Congratulations" : "Game over :(";
             Console.WriteLine(outMsg);
         }
 
@@ -105,15 +112,16 @@
                 victim[0].DoAttack(victim[1]);
                 if (!victim[1].IsAlive())
                 {
-                    opponent.RemoveUnit(victim[1], city);
+                    player.RemoveUnit(victim[1], city);
+                    Console.WriteLine($"You lose your {victim[1].Name}");
                 }
             }
             else
             {
                 Random rnd = new Random();
-                var unitId = rnd.Next(0, 2);
-                var x = opponent.Units[unitId].XСoordinate;
-                var y = opponent.Units[unitId].YСoordinate;
+                var unitId = rnd.Next(0, opponent.Units.Count);
+                var x = opponent.Units[unitId].X;
+                var y = opponent.Units[unitId].Y;
                 var directionAsInt = rnd.Next(0, 3);
                 var directionAsString = "";
                 switch (directionAsInt)
@@ -132,7 +140,7 @@
                         break;
                 }
                 opponent.Units[unitId].Move(opponent.Units[unitId], directionAsString, city);
-                if (opponent.Units[unitId].XСoordinate == x & opponent.Units[unitId].YСoordinate == y)
+                if (opponent.Units[unitId].X == x & opponent.Units[unitId].Y == y)
                 {
                     OpponentsStep(opponent, player, city);
                 }
@@ -178,7 +186,7 @@
 
         private static IUnit AskForUnit(List<IUnit> units)
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < units.Count; i++)
             {
                 Console.WriteLine($"{units[i].Id}. {units[i].Name}");
             }

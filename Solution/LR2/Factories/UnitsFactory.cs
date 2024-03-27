@@ -1,4 +1,6 @@
-namespace LR2;
+using LR2.Units;
+
+namespace LR2.Factories;
 
 public class UnitsFactory
 {

@@ -1,3 +1,6 @@
+using LR2.Interfaces;
+using LR2.Units;
+
 namespace LR2;
 
 public class City(int cols, int rows, int swampsNumber, int hillsNumber, int treesNumber)
@@ -11,11 +14,11 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
 
     public int GetWayRange(string direction, IUnit unit)
     {
-        var x = unit.XСoordinate;
-        var y = unit.YСoordinate;
+        var x = unit.X;
+        var y = unit.Y;
         double count = 0;
         double wayrange;
-        var type = "y-";
+        var type = "";
         switch (direction)
         {
             case "u":
@@ -32,14 +35,15 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
                 break;
         }
 
-        for (int i = 0; i < unit.MovementRange; i++)
+        for (var i = 0; i < unit.MovementRange; i++)
         {
-            int[] coordinates = FindCoordinates(x, y, type);
+            var coordinates = FindCoordinates(x, y, type);
             x = coordinates[0];
             y = coordinates[1];
-            if (x == -1 || y == -1)
+            if (x == -1 || y == -1 || x == Cols || y == Rows)
             {
-                break;
+                wayrange = Math.Floor(count);
+                return Convert.ToInt32(wayrange);
             }
             var fine = GetFine(unit, CityObjects[y][x].Obj);
             if (count+fine <= unit.MovementRange)
