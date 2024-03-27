@@ -84,7 +84,8 @@ public class HorseUnit(string name, int health, int attackNumber, int attackRang
     
     public bool CheckAvailability(IUnit victim)
     {
-        return Math.Abs(XСoordinate - victim.XСoordinate) <= AttackRange || Math.Abs( YСoordinate - victim.YСoordinate) <= AttackRange;
+        return Math.Abs(XСoordinate - victim.XСoordinate) <= AttackRange & YСoordinate == victim.YСoordinate ||
+               Math.Abs(YСoordinate - victim.YСoordinate) <= AttackRange & XСoordinate == victim.XСoordinate;
     }
     
     public bool IsAlive()
