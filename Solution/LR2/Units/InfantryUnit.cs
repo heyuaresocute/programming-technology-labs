@@ -84,8 +84,9 @@ public class InfantryUnit(string name, int health, int attackNumber, int attackR
     
     public bool CheckAvailability(IUnit victim)
     {
-        return Math.Abs(XСoordinate - victim.XСoordinate) <= AttackRange ||
-               Math.Abs(YСoordinate - victim.YСoordinate) <= AttackRange;
+        
+        return Math.Abs(XСoordinate - victim.XСoordinate) <= AttackRange & YСoordinate == victim.YСoordinate ||
+               Math.Abs(YСoordinate - victim.YСoordinate) <= AttackRange & XСoordinate == victim.XСoordinate;
     }
     
     public bool IsAlive()

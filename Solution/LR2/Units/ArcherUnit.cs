@@ -105,6 +105,6 @@ public class ArcherUnit(string name, int health, int attackNumber, int attackRan
         {
             return leg1;
         }
-        return leg1 * leg1 + leg2 * leg2;
+        return Math.Sqrt(leg1 * leg1 + leg2 * leg2);
     }
 }
