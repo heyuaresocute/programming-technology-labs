@@ -32,7 +32,7 @@ public class InfantryUnit(string name, int health, int attackNumber, int attackR
                 x -= wayRange;
                 break;
         }
-        if (city.CityObjects[y][x].Obj != "*")
+        if (city.CityObjects[y][x].Obj != "*" & city.CityObjects[y][x].Obj != $"{Id}")
         {
             switch (direction)
             {
@@ -61,19 +61,19 @@ public class InfantryUnit(string name, int health, int attackNumber, int attackR
         {
             if (unit.Defence > 0)
             {
-                if (unit.Defence - attackNumber < 0)
+                if (unit.Defence < AttackNumber)
                 {
+                    unit.Health -= AttackNumber - unit.Defence;
                     unit.Defence = 0;
-                    unit.Health -= attackNumber - defence;
                 }
                 else
                 {
-                    unit.Defence -= attackNumber;
+                    unit.Defence -= AttackNumber;
                 }
             }
             else
             {
-                unit.Health -= attackNumber;
+                unit.Health -= AttackNumber;
             }
         }
         else

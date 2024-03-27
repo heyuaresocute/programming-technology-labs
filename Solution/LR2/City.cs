@@ -37,6 +37,10 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
             int[] coordinates = FindCoordinates(x, y, type);
             x = coordinates[0];
             y = coordinates[1];
+            if (x == -1 || y == -1)
+            {
+                break;
+            }
             var fine = GetFine(unit, CityObjects[y][x].Obj);
             if (count+fine <= unit.MovementRange)
             {

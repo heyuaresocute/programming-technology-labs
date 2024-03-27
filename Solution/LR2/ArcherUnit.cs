@@ -14,8 +14,8 @@ public class ArcherUnit(string name, int health, int attackNumber, int attackRan
     public int Cost { get; } = cost;
     public void Move(IUnit unit, string direction, City city)
     {
-        var y = unit.YСoordinate;
-        var x = unit.XСoordinate;
+        var y = YСoordinate;
+        var x = XСoordinate;
         var wayRange = city.GetWayRange(direction, unit);
         switch (direction)
         {
@@ -32,7 +32,7 @@ public class ArcherUnit(string name, int health, int attackNumber, int attackRan
                 x -= wayRange;
                 break;
         }
-        if (city.CityObjects[y][x].Obj != "*")
+        if (city.CityObjects[y][x].Obj != "*" & city.CityObjects[y][x].Obj != $"{Id}")
         {
             switch (direction)
             {
@@ -50,15 +50,36 @@ public class ArcherUnit(string name, int health, int attackNumber, int attackRan
                     break;
             }
         }
-        city.PlaceObject(unit.XСoordinate, unit.YСoordinate, "*");
-        unit.XСoordinate = x;
-        unit.YСoordinate = y;
-        city.PlaceObject(unit.XСoordinate, unit.YСoordinate, $"{unit.Id}");
+        city.PlaceObject(XСoordinate, YСoordinate, "*");
+        XСoordinate = x;
+        YСoordinate = y;
+        city.PlaceObject(XСoordinate, YСoordinate, $"{Id}");
     }
-
     public void DoAttack(IUnit unit)
     {
-        unit.Health -= attackNumber;
+        if (CheckAvailability(unit))
+        {
+            if (unit.Defence > 0)
+            {
+                if (unit.Defence < AttackNumber)
+                {
+                    unit.Health -= AttackNumber - unit.Defence;
+                    unit.Defence = 0;
+                }
+                else
+                {
+                    unit.Defence -= AttackNumber;
+                }
+            }
+            else
+            {
+                unit.Health -= AttackNumber;
+            }
+        }
+        else
+        {
+            Console.WriteLine("You can't attack this unit");
+        }
     }
     
     private bool CheckAvailability(IUnit victim)
