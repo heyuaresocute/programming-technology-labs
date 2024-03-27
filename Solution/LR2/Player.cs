@@ -4,13 +4,13 @@ public class Player(int cash)
 {
     public List<IUnit> Units { get; set; } = [];
     public int Cash { get; set; } = cash;
-    public void SelectUnits(UnitsFactory factory)
+    public void SelectUnits(UnitsFactory factory, City city)
     {
         var count = 0;
         while (count < 3)
         {
             var unitId = Convert.ToInt32(Console.ReadLine());
-            var unit = Selecter(factory, unitId, 9, 9 - count, count + 1);
+            var unit = Selecter(factory, unitId, city.Cols - 1, city.Rows - 1 - count, count + 1);
             Cash -= unit.Cost;
             if (Cash >= 0)
             {
@@ -92,9 +92,62 @@ public class Player(int cash)
         }
     }
 
-    public void RemoveUnit(IUnit unit)
+    public void RemoveUnit(IUnit unit, City city)
     {
         Units.Remove(unit);
-        
+        city.PlaceObject(unit.XСoordinate, unit.YСoordinate, "*");
+    }
+
+    public IUnit[]? GetVictim(Player opponent)
+    {
+        IUnit unit1 = opponent.Units[0];
+        IUnit unit2 = opponent.Units[1];
+        IUnit unit3 = opponent.Units[2];
+        if (Units[0].CheckAvailability(unit1))
+        {
+            return [Units[0], unit1];
+        }
+
+        if (Units[0].CheckAvailability(unit2))
+        {
+            return [Units[0], unit2];
+        }
+
+        if (Units[0].CheckAvailability(unit3))
+        {
+            return [Units[0], unit3];
+        }
+
+        if (Units[1].CheckAvailability(unit1))
+        {
+            return [Units[1], unit1];
+        }
+
+        if (Units[1].CheckAvailability(unit2))
+        {
+            return [Units[1], unit2];
+        }
+
+        if (Units[1].CheckAvailability(unit3))
+        {
+            return [Units[1], unit3];
+        }
+
+        if (Units[2].CheckAvailability(unit1))
+        {
+            return [Units[2], unit1];
+        }
+
+        if (Units[2].CheckAvailability(unit2))
+        {
+            return [Units[2], unit2];
+        }
+
+        if (Units[2].CheckAvailability(unit3))
+        {
+            return [Units[2], unit3];
+        }
+
+        return null;
     }
 }

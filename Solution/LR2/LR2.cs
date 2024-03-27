@@ -44,7 +44,7 @@
             var opponent = new Player(startcash);
             var factory = new UnitsFactory();
             Console.WriteLine($"Your start cash is {startcash}. Choose your units (select 3): ");
-            player.SelectUnits(factory);
+            player.SelectUnits(factory, city);
             opponent.OpponentSelectUnits(factory);
             Start(player, opponent, city);
         }
@@ -80,14 +80,14 @@
                         unit.DoAttack(opponentsUnit);
                         if (!opponentsUnit.IsAlive())
                         {
-                            opponent.RemoveUnit(opponentsUnit);
+                            opponent.RemoveUnit(opponentsUnit, city);
                         }
                         break;
                     case 3:
                         break;
                 }
 
-                OpponentsStep(opponent);
+                OpponentsStep(opponent, player, city);
 
                 win = Win(player, opponent);
             }
@@ -96,9 +96,51 @@
             Console.WriteLine(outMsg);
         }
 
-        private static void OpponentsStep(Player opponent)
+        private static void OpponentsStep(Player opponent, Player player, City city)
         {
-            
+            var victim = opponent.GetVictim(player); // сначала его, потом чужой
+            if (victim != null)
+            {
+                Console.WriteLine($"Your opponent attacks your {victim[1].Name} by his {victim[0].Name}!");
+                victim[0].DoAttack(victim[1]);
+                if (!victim[1].IsAlive())
+                {
+                    opponent.RemoveUnit(victim[1], city);
+                }
+            }
+            else
+            {
+                Random rnd = new Random();
+                var unitId = rnd.Next(0, 2);
+                var x = opponent.Units[unitId].XСoordinate;
+                var y = opponent.Units[unitId].YСoordinate;
+                var directionAsInt = rnd.Next(0, 3);
+                var directionAsString = "";
+                switch (directionAsInt)
+                {
+                    case 0:
+                        directionAsString = "u";
+                        break;
+                    case 1:
+                        directionAsString = "d";
+                        break;
+                    case 2:
+                        directionAsString = "l";
+                        break;
+                    case 3:
+                        directionAsString = "r";
+                        break;
+                }
+                opponent.Units[unitId].Move(opponent.Units[unitId], directionAsString, city);
+                if (opponent.Units[unitId].XСoordinate == x & opponent.Units[unitId].YСoordinate == y)
+                {
+                    OpponentsStep(opponent, player, city);
+                }
+                else
+                {
+                    Console.WriteLine($"Your opponent moves his {opponent.Units[unitId].Name}!");
+                }
+            }
         }
 
         private static int Win(Player player, Player opponent)

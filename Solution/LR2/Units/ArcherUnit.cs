@@ -55,25 +55,25 @@ public class ArcherUnit(string name, int health, int attackNumber, int attackRan
         YСoordinate = y;
         city.PlaceObject(XСoordinate, YСoordinate, $"{Id}");
     }
-    public void DoAttack(IUnit unit)
+    public void DoAttack(IUnit victim)
     {
-        if (CheckAvailability(unit))
+        if (CheckAvailability(victim))
         {
-            if (unit.Defence > 0)
+            if (victim.Defence > 0)
             {
-                if (unit.Defence < AttackNumber)
+                if (victim.Defence < AttackNumber)
                 {
-                    unit.Health -= AttackNumber - unit.Defence;
-                    unit.Defence = 0;
+                    victim.Health -= AttackNumber - victim.Defence;
+                    victim.Defence = 0;
                 }
                 else
                 {
-                    unit.Defence -= AttackNumber;
+                    victim.Defence -= AttackNumber;
                 }
             }
             else
             {
-                unit.Health -= AttackNumber;
+                victim.Health -= AttackNumber;
             }
         }
         else
@@ -82,7 +82,7 @@ public class ArcherUnit(string name, int health, int attackNumber, int attackRan
         }
     }
     
-    private bool CheckAvailability(IUnit victim)
+    public bool CheckAvailability(IUnit victim)
     {
         return Convert.ToInt32(GetEuclideanDistance(victim)) <= AttackRange;
     }
@@ -94,10 +94,8 @@ public class ArcherUnit(string name, int health, int attackNumber, int attackRan
     
     private double GetEuclideanDistance(IUnit unit)
     {
-        int[] xArray = [XСoordinate, unit.XСoordinate];
-        int[] yArray = [YСoordinate, unit.YСoordinate];
-        var leg1 = xArray.Max() - xArray.Min();
-        var leg2 = yArray.Max() - yArray.Min();
+        var leg1 = XСoordinate - unit.XСoordinate;
+        var leg2 = YСoordinate - unit.YСoordinate;
         if (leg1 == 0)
         {
             return leg2;

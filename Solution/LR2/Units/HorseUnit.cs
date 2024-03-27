@@ -1,6 +1,6 @@
 namespace LR2;
 
-public class InfantryUnit(string name, int health, int attackNumber, int attackRange, int defence, int movementRange, int cost, int y, int x, int id): IUnit
+public class HorseUnit(string name, int health, int attackNumber, int attackRange, int defence, int movementRange, int cost, int y, int x, int id): IUnit
 {
     public string Name { get; } = name;
     public int Id { get; } = id;
@@ -55,25 +55,25 @@ public class InfantryUnit(string name, int health, int attackNumber, int attackR
         YСoordinate = y;
         city.PlaceObject(XСoordinate, YСoordinate, $"{Id}");
     }
-    public void DoAttack(IUnit unit)
+    public void DoAttack(IUnit victim)
     {
-        if (CheckAvailability(unit))
+        if (CheckAvailability(victim))
         {
-            if (unit.Defence > 0)
+            if (victim.Defence > 0)
             {
-                if (unit.Defence < AttackNumber)
+                if (victim.Defence < AttackNumber)
                 {
-                    unit.Health -= AttackNumber - unit.Defence;
-                    unit.Defence = 0;
+                    victim.Health -= AttackNumber - victim.Defence;
+                    victim.Defence = 0;
                 }
                 else
                 {
-                    unit.Defence -= AttackNumber;
+                    victim.Defence -= AttackNumber;
                 }
             }
             else
             {
-                unit.Health -= AttackNumber;
+                victim.Health -= AttackNumber;
             }
         }
         else
@@ -82,9 +82,9 @@ public class InfantryUnit(string name, int health, int attackNumber, int attackR
         }
     }
     
-    private bool CheckAvailability(IUnit victim)
+    public bool CheckAvailability(IUnit victim)
     {
-        return XСoordinate - victim.XСoordinate <= AttackRange || YСoordinate - victim.YСoordinate <= AttackRange;
+        return Math.Abs(XСoordinate - victim.XСoordinate) <= AttackRange || Math.Abs( YСoordinate - victim.YСoordinate) <= AttackRange;
     }
     
     public bool IsAlive()
