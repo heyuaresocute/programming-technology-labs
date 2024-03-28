@@ -62,6 +62,7 @@ namespace LR2
             string outMsg;
             while (win == ContinueGame)
             {
+                Console.Clear();
                 city.OutputCity();
                 Console.WriteLine("Your units: ");
                 player.OutputUnits();
@@ -99,7 +100,7 @@ namespace LR2
                 win = Win(player, opponent);
             }
 
-            outMsg = win == 1 ? "Congratulations" : "Game over :(";
+            outMsg = win == 1 ? "Congratulations!" : "Game over :(";
             Console.WriteLine(outMsg);
         }
 
