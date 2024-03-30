@@ -44,9 +44,14 @@ public class UnitsFactory
         return new HorseUnit("Knight", 30, 5, 1, 3, 6, 20, x , y, id);
     }
     
-    public HorseUnit CreateСuirassier(int x, int y, int id)
+    public HorseUnit CreateBrassiere(int x, int y, int id)
     {
-        return new HorseUnit("Сuirassier", 50, 2, 1, 7, 5, 23, x , y, id);
+        return new HorseUnit("Brassiere", 50, 2, 1, 7, 5, 23, x , y, id);
+    }
+    
+    public HorseUnit CreatePaladine(int x, int y, int id)
+    {
+        return new HorseUnit("Paladine", 50, 20, 20, 7, 20, 23, x , y, id);
     }
     
     

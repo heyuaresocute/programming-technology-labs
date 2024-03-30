@@ -69,6 +69,7 @@ namespace LR2
                 Console.WriteLine("Opponent's units: ");
                 opponent.OutputUnits();
                 var action = AskForAction();
+                IUnit unit;
                 switch (action)
                 {
                     case 1:
@@ -165,12 +166,7 @@ namespace LR2
             Console.WriteLine("r - right");
             Console.WriteLine("l - left");
             var answer = Convert.ToString(Console.ReadLine());
-            if (answer == "u" || answer == "d" || answer == "r" || answer == "l")
-            {
-                return answer;
-            }
-
-            return AskForDirection();
+            return answer is "u" or "d" or "r" or "l" ? answer : AskForDirection();
         }
 
         private static int AskForAction()

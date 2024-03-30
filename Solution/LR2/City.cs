@@ -169,9 +169,9 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
     
     private void FillTheCity()
     {
-        for (int i = 0; i < Cols; i++)
+        for (var i = 0; i < Cols; i++)
         {
-            for (int j = 0; j < Rows; j++)
+            for (var j = 0; j < Rows; j++)
             {
                 CityObjects[i][j] = new Square("*");
             }
@@ -185,7 +185,7 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
     {
         for (var i = 0; i < number; i++)
         {
-            Random rnd = new Random();
+            var rnd = new Random();
             var rnd1 = rnd.Next(1, Cols);
             var rnd2 = rnd.Next(1, Rows);
             if (CityObjects[rnd1][rnd2].Obj != "*")
