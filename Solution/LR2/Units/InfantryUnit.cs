@@ -34,7 +34,7 @@ public class InfantryUnit(string name, int health, int attackNumber, int attackR
                 x -= wayRange;
                 break;
         }
-        if (city.CityObjects[y][x].Obj != "*" & city.CityObjects[y][x].Obj != $"{Id}")
+        while (city.CityObjects[y][x].Obj != "*" & city.CityObjects[y][x].Obj != $"{Id}")
         {
             switch (direction)
             {

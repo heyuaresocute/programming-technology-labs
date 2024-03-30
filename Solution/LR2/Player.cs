@@ -89,9 +89,11 @@ public class Player(int cash)
             case 7:
                 return factory.CreateKnight(x, y, id);
             case 8:
-                return factory.CreateСuirassier(x, y, id);
+                return factory.CreateBrassiere(x, y, id);
             case 9:
                 return factory.CreateHorseBow(x, y, id);
+            case 10:
+                return factory.CreatePaladine(x, y, id);
         }
     }
 

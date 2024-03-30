@@ -69,7 +69,6 @@ namespace LR2
                 Console.WriteLine("Opponent's units: ");
                 opponent.OutputUnits();
                 var action = AskForAction();
-                IUnit unit;
                 switch (action)
                 {
                     case 1:
@@ -183,26 +182,18 @@ namespace LR2
 
         private static IUnit AskForUnit(List<IUnit> units)
         {
-            for (int i = 0; i < units.Count; i++)
+            foreach (var unit in units)
             {
-                Console.WriteLine($"{units[i].Id}. {units[i].Name}");
+                Console.WriteLine($"{unit.Id}. {unit.Name}");
             }
 
             var selected = Convert.ToInt32(Console.ReadLine());
-            switch (selected)
+            foreach (var unit in units)
             {
-                case 1:
-                    return units[0];
-                case 2:
-                    return units[1];
-                case 3:
-                    return units[2];
-                case 7:
-                    return units[0];
-                case 8:
-                    return units[1];
-                case 9:
-                    return units[2];
+                if (unit.Id == selected)
+                {
+                    return unit;
+                }
             }
 
             return AskForUnit(units);

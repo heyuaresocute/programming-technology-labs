@@ -1,17 +1,15 @@
 namespace LR2.Interfaces;
 
-public interface IUnit
+public interface IAnimal
 {
     string Name{ get; }
     int Id { get; }
     int Health { get; set; }
-    int AttackNumber { get; }
+    int AttackDanger { get; }
     int AttackRange { get; }
-    int Defence { get; set; }
     int MovementRange { get; }
     int Y { get; }
     int X { get; }
-    int Cost { get; }
     void Move(IUnit unit, string direction, City city);
     void DoAttack(IUnit victim);
     bool IsAlive();
