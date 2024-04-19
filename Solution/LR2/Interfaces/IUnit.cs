@@ -3,16 +3,17 @@ namespace LR2.Interfaces;
 public interface IUnit
 {
     string Name{ get; }
-    int Id { get; }
+    string ShortName { get; }
     int Health { get; set; }
-    int AttackNumber { get; }
-    int AttackRange { get; }
+    int AttackDamage { get; set; }
+    int AttackRange { get; set; }
     int Defence { get; set; }
-    int MovementRange { get; }
+    int MovementRange { get; set; }
     int Y { get; }
     int X { get; }
-    int Cost { get; }
-    void Move(IUnit unit, string direction, City city);
+    int Cost { get; set; } 
+    int Bleed { get; set; }
+    void Move(string direction, City city);
     void DoAttack(IUnit victim);
     bool IsAlive();
     bool CheckAvailability(IUnit unit);

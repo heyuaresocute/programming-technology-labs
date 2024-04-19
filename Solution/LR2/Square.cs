@@ -8,5 +8,4 @@ public class Square(string obj)
                                             // T – Дерево
                                             // 1, 2, 3 – Юниты игрока
                                             // a, b, c – Юниты противника
-    
 }

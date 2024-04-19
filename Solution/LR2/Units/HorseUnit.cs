@@ -2,23 +2,25 @@ using LR2.Interfaces;
 
 namespace LR2.Units;
 
-public class HorseUnit(string name, int health, int attackNumber, int attackRange, int defence, int movementRange, int cost, int y, int x, int id): IUnit
+public class HorseUnit(string name, int health, int attackNumber, int attackRange, int defence, int movementRange, int cost, int y, int x, string id): IUnit
 {
     public string Name { get; } = name;
-    public int Id { get; } = id;
+    public string ShortName { get; } = id;
     public int Health { get; set; } = health;
-    public int AttackNumber { get; } = attackNumber;
-    public int AttackRange { get; } = attackRange;
+    public int AttackDamage { get; set; } = attackNumber;
+    public int AttackRange { get; set; } = attackRange;
     public int Defence { get; set; } = defence;
-    public int MovementRange { get; } = movementRange;
+    public int MovementRange { get; set; } = movementRange;
     public int Y { get; set; } = y;
     public int X { get; set; } = x;
-    public int Cost { get; } = cost;
-    public void Move(IUnit unit, string direction, City city)
+    public int Cost { get; set; } = cost;
+    public int Bleed { get; set; } = 0;
+
+    public void Move(string direction, City city)
     {
         var y = Y;
         var x = X;
-        var wayRange = city.GetWayRange(direction, unit);
+        var wayRange = city.GetWayRange(direction, this);
         switch (direction)
         {
             case "u":
@@ -34,7 +36,7 @@ public class HorseUnit(string name, int health, int attackNumber, int attackRang
                 x -= wayRange;
                 break;
         }
-        if (city.CityObjects[y][x].Obj != "*" & city.CityObjects[y][x].Obj != $"{Id}")
+        while (city.CityObjects[y][x].Obj != "*" & city.CityObjects[y][x].Obj != $"{ShortName}")
         {
             switch (direction)
             {
@@ -55,7 +57,7 @@ public class HorseUnit(string name, int health, int attackNumber, int attackRang
         city.PlaceObject(X, Y, "*");
         X = x;
         Y = y;
-        city.PlaceObject(X, Y, $"{Id}");
+        city.PlaceObject(X, Y, $"{ShortName}");
     }
     public void DoAttack(IUnit victim)
     {
@@ -63,19 +65,19 @@ public class HorseUnit(string name, int health, int attackNumber, int attackRang
         {
             if (victim.Defence > 0)
             {
-                if (victim.Defence < AttackNumber)
+                if (victim.Defence < AttackDamage)
                 {
-                    victim.Health -= AttackNumber - victim.Defence;
+                    victim.Health -= AttackDamage - victim.Defence;
                     victim.Defence = 0;
                 }
                 else
                 {
-                    victim.Defence -= AttackNumber;
+                    victim.Defence -= AttackDamage;
                 }
             }
             else
             {
-                victim.Health -= AttackNumber;
+                victim.Health -= AttackDamage;
             }
         }
         else
@@ -83,7 +85,7 @@ public class HorseUnit(string name, int health, int attackNumber, int attackRang
             Console.WriteLine("You can't attack this unit");
         }
     }
-    
+
     public bool CheckAvailability(IUnit victim)
     {
         return Math.Abs(X - victim.X) <= AttackRange & Y == victim.Y ||

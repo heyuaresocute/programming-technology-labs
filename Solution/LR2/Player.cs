@@ -3,72 +3,73 @@ using LR2.Interfaces;
 
 namespace LR2;
 
-public class Player(int cash)
+public class Player(int cash, string type)
 {
-    public List<IUnit> Units { get; } = [];
+    public string Type { get; } = type;
+    public List<IUnit> Units { get; set; } = [];
     public int Cash { get; set; } = cash;
     public void SelectUnits(UnitsFactory factory, City city)
     {
         var count = 0;
-        while (count < 3)
+        int unitId = 1;
+        IUnit unit;
+        if (Type == "You")
         {
-            var unitId = Convert.ToInt32(Console.ReadLine());
-            var unit = Selecter(factory, unitId, city.Cols - 1, city.Rows - 1 - count, count + 1);
-            Cash -= unit.Cost;
-            if (Cash >= 0)
-            {
-                Units.Add(unit);
-                count += 1;
-                Console.WriteLine($"{unit.Name} selected, your cash now is {Cash}");
-            }
-            else
-            {
-                Cash += unit.Cost;
-                Console.WriteLine($"You can't select {unit.Name}, because your cash now is {Cash}");
-            }
+            Console.WriteLine("Select your units (select 3):");
         }
-    }
-    
-    public void OpponentSelectUnits(UnitsFactory factory)
-    {
-        var count = 0;
-        Random rnd = new Random();
-        int unitId;
         while (count < 3)
         {
-            unitId = rnd.Next(1, 9);
-            var unit = Selecter(factory, unitId, 0, count, count + 7);
+            switch (Type)
+            {
+                default:
+                {
+                    unit = Selecter(factory, unitId, 0, count, $"{count + 7}");
+                    break;
+                }
+                case "Opponent":
+                {
+                    Random rnd = new Random();
+                    unitId = rnd.Next(1, 9);
+                    unit = Selecter(factory, unitId, 0, count, $"{count + 7}");
+                    break;
+                }
+                case "You":
+                    unitId = Convert.ToInt32(Console.ReadLine());
+                    unit = Selecter(factory, unitId, city.Cols - 1, city.Rows - 1 - count, $"{count + 1}");
+                    break;
+            }
             Cash -= unit.Cost;
             if (Cash >= 0)
             {
                 Units.Add(unit);
                 count += 1;
+                if (Type == "You")
+                {
+                    Console.WriteLine($"{unit.Name} selected, your cash now is {Cash}");
+                }
             }
             else
             {
                 Cash += unit.Cost;
+                city.PlaceObject(unit.X, unit.Y, "*");
+                if (Type == "You")
+                {
+                    Console.WriteLine($"You can't select {unit.Name}, because your cash now is {Cash}");
+                }
             }
+            
         }
     }
 
     public void OutputUnits()
     {
-        for (int i = 0; i < Units.Count; i++)
+        foreach (var unit in Units)
         {
-            Console.WriteLine($"{Units[i].Id}. {Units[i].Name}, health - {Units[i].Health}, attack - {Units[i].AttackNumber}, attack range - {Units[i].AttackRange}, defence - {Units[i].Defence}, move - {Units[i].MovementRange}");
-        }
-        
-    }
-    
-    public void PlaceUnits(City city)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            city.PlaceObject(Units[i].X, Units[i].Y, $"{Units[i].Id}");
+            Console.WriteLine($"{unit.ShortName}. {unit.Name}, health - {unit.Health}, attack - {unit.AttackDamage}, attack range - {unit.AttackRange}, defence - {unit.Defence}, movement range - {unit.MovementRange}, bleeds - {unit.Bleed}");
         }
     }
 
-    private IUnit Selecter(UnitsFactory factory, int unitId, int x, int y, int id)
+    private static IUnit Selecter(UnitsFactory factory, int unitId, int x, int y, string id)
     {
         switch (unitId)
         {
@@ -105,17 +106,11 @@ public class Player(int cash)
 
     public IUnit[]? GetVictim(Player opponent)
     {
-        foreach (var unit in Units)
-        {
-            foreach (var victim in opponent.Units)
-            {
-                if (unit.CheckAvailability(victim))
-                {
-                    return [unit, victim];
-                }
-            }
-        }
+        return (from unit in Units from victim in opponent.Units.Where(unit.CheckAvailability) select (IUnit[]?) [unit, victim]).FirstOrDefault();
+    }
 
-        return null;
+    public IUnit[]? GetAnimal(City city)
+    {
+        return (from unit in Units from animal in city.Animals.Where(animal => animal.CheckAvailabilityOfFeeder(unit)) select (IUnit[]?) [unit, animal]).FirstOrDefault();
     }
 }

@@ -1,3 +1,5 @@
+using LR2.Animals;
+using LR2.Factories;
 using LR2.Interfaces;
 using LR2.Units;
 
@@ -5,12 +7,18 @@ namespace LR2;
 
 public class City(int cols, int rows, int swampsNumber, int hillsNumber, int treesNumber)
 {
-    public int SwampsNumber { get; } = swampsNumber;
-    public int HillsNumber { get; } = hillsNumber;
-    public int TreesNumber { get; } = treesNumber;
+    private int SwampsNumber { get; } = swampsNumber;
+    private int HillsNumber { get; } = hillsNumber;
+    private int TreesNumber { get; } = treesNumber;
     public int Cols { get; } = cols;
     public int Rows { get; } = rows;
+    public const string TreeType = "T";
+    public const string SwampType = "S";
+    public const string HillType = "H";
+    public List<IAnimal> Animals { get; } = [];
+    public List<Player> Players { get; } = [];
     public Square[][] CityObjects { get; set; } = [];
+    private UnitsFactory? _factory;
 
     public int GetWayRange(string direction, IUnit unit)
     {
@@ -49,60 +57,93 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
             if (count+fine <= unit.MovementRange)
             {
                 count += fine;
+                if (CityObjects[y][x].Obj == TreeType & Animals.Count == 0)
+                {
+                    int[]? catCoordinates = FindFreePlace(y, x);
+                    if (catCoordinates != null)
+                    {
+                        _factory!.CreateCat(catCoordinates[1], catCoordinates[0]);
+                    }
+                }
             }
         }
         wayrange = Math.Floor(count);
         return Convert.ToInt32(wayrange);
     }
 
-    private static double GetFine(IUnit unit, string type)
+    private int[]? FindFreePlace(int y, int x)
+    {
+        try
+        {
+            if (CityObjects[y+1][x].Obj == "*")
+            {
+                return [y + 1, x];
+            }
+            if (CityObjects[y][x+1].Obj == "*")
+            {
+                return [y, x+1];        
+            }
+            if (CityObjects[y+1][x+1].Obj == "*")
+            {
+                return [y + 1, x + 1];            
+            }
+            if (CityObjects[y-1][x].Obj == "*")
+            {
+                return [y - 1, x];         
+            }
+            if (CityObjects[y][x-1].Obj == "*")
+            {
+                return [y, x-1];        
+            }
+            if (CityObjects[y-1][x-1].Obj == "*")
+            {
+                return [y-1,x-1];    
+            }
+        }
+        catch (IndexOutOfRangeException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        return null;
+    }
+
+    private double GetFine(IUnit unit, string type)
     {
         if (type == "*")
         {
             return 1;
         }
 
-        if (unit is InfantryUnit)
+        switch (unit)
         {
-            switch (type)
-            {
-                case "S":
-                    return 1.5;
-                case "H":
-                    return 2;
-                case "T":
-                    return 1.2;
-                    
-            }
+            case InfantryUnit when type == SwampType:
+                return 1.5;
+            case InfantryUnit when type == HillType:
+                return 2;
+            case InfantryUnit when type == TreeType:
+                return 1.2;
+            case ArcherUnit when type == SwampType:
+                return 1.8;
+            case ArcherUnit when type == HillType:
+                return 2.2;
+            case ArcherUnit when type == TreeType:
+                return 1;
+            case HorseUnit when type == SwampType:
+                return 2.2;
+            case HorseUnit when type == HillType:
+                return 1.2;
+            case HorseUnit when type == TreeType:
+                return 1.5;
+            case Cat when type == SwampType:
+                return 1.5;
+            case Cat when type == HillType:
+                return 1.5;
+            case Cat when type == TreeType:
+                return 1;
+            default:
+                return 1;
         }
-        if (unit is ArcherUnit)
-        {
-            switch (type)
-            {
-                case "S":
-                    return 1.8;
-                case "H":
-                    return 2.2;
-                case "T":
-                    return 1;
-                    
-            }
-        }
-        if (unit is HorseUnit)
-        {
-            switch (type)
-            {
-                case "S":
-                    return 2.2;
-                case "H":
-                    return 1.2;
-                case "T":
-                    return 1.5;
-                    
-            }
-        }
-
-        return 1;
     }
     private static int[] FindCoordinates(int x, int y, string type)
     {
@@ -129,6 +170,7 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
     
     public void GenerateCity()
     {
+        _factory = new UnitsFactory(this);
         CityObjects = GenerateMatrix(Cols, Rows);
         FillTheCity();
     }
@@ -176,9 +218,9 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
                 CityObjects[i][j] = new Square("*");
             }
         }
-        PlaceObjects(SwampsNumber, "S");
-        PlaceObjects(HillsNumber, "H");
-        PlaceObjects(TreesNumber, "T");
+        PlaceObjects(SwampsNumber, SwampType);
+        PlaceObjects(HillsNumber, HillType);
+        PlaceObjects(TreesNumber, TreeType);
     }
 
     private void PlaceObjects(int number, string type)

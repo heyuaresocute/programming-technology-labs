@@ -43,22 +43,23 @@ namespace LR2
             }
 
             var city = new City(cols, rows, swampsNumber, hillsNumber, treesNumber);
-            var player = new Player(startcash);
-            var opponent = new Player(startcash);
-            var factory = new UnitsFactory();
+            city.GenerateCity();
+            var player = new Player(startcash, "You");
+            var opponent = new Player(startcash, "Opponent");
+            city.Players.Add(player);
+            city.Players.Add(opponent);
+            var unitsFactory = new UnitsFactory(city);
             Console.WriteLine($"Your start cash is {startcash}. Choose your units (select 3): ");
-            player.SelectUnits(factory, city);
-            opponent.OpponentSelectUnits(factory);
-            Start(player, opponent, city);
+            player.SelectUnits(unitsFactory, city);
+            opponent.SelectUnits(unitsFactory, city);
+            Start(city);
         }
 
-        private static void Start(Player player, Player opponent, City city)
+        private static void Start(City city)
         {
-            city.GenerateCity();
-            player.PlaceUnits(city);
-            opponent.PlaceUnits(city);
+            var player = city.Players[0];
+            var opponent = city.Players[1];
             var win = Win(player, opponent);
-            IUnit unit;
             string outMsg;
             while (win == ContinueGame)
             {
@@ -68,56 +69,106 @@ namespace LR2
                 player.OutputUnits();
                 Console.WriteLine("Opponent's units: ");
                 opponent.OutputUnits();
-                var action = AskForAction();
-                switch (action)
+                win = Win(player, opponent);
+                if (win == ContinueGame)
                 {
-                    case 1:
-                        Console.WriteLine("Choose your unit: ");
-                        unit = AskForUnit(player.Units);
-                        var direction = AskForDirection();
-                        unit.Move(unit, direction, city);
-                        break;
-                    case 2:
-                        Console.WriteLine("Choose your unit: ");
-                        unit = AskForUnit(player.Units);
-                        Console.WriteLine("Choose your opponent's unit: ");
-                        var opponentsUnit = AskForUnit(opponent.Units);
-                        unit.DoAttack(opponentsUnit);
-                        if (!opponentsUnit.IsAlive())
-                        {
-                            Console.WriteLine($"You killed your opponent's {opponentsUnit.Name}");
-                            opponent.RemoveUnit(opponentsUnit, city);
-                        }
-                        break;
-                    case 3:
-                        break;
+                    PlayersStep(city);
                 }
                 win = Win(player, opponent);
                 if (win == ContinueGame)
                 {
-                    OpponentsStep(opponent, player, city);
+                    OpponentsStep(city);
                 }
                 win = Win(player, opponent);
+                if (win == ContinueGame)
+                {
+                    if (city.Animals.Count != 0)
+                    {
+                        foreach (var animal in city.Animals)
+                        {
+                            animal.TakeAStep(city);
+                        }
+                    }
+                }
+                win = Win(player, opponent);
+                city.Players[0] = player;
+                city.Players[1] = opponent;
             }
 
             outMsg = win == 1 ? "Congratulations!" : "Game over :(";
             Console.WriteLine(outMsg);
         }
 
-        private static void OpponentsStep(Player opponent, Player player, City city)
+        private static void PlayersStep(City city)
         {
-            var victim = opponent.GetVictim(player); // сначала его, потом чужой
-            if (victim != null)
+            var player = city.Players[0];
+            var opponent = city.Players[1];
+            IUnit[]? animal = null;
+            if (city.Animals.Count != 0)
             {
-                Console.WriteLine($"Your opponent attacks your {victim[1].Name} by his {victim[0].Name}!");
-                victim[0].DoAttack(victim[1]);
-                if (!victim[1].IsAlive())
+                animal = opponent.GetAnimal(city); // сначала юнит, потом животное
+            }
+            Console.WriteLine("Choose your unit: ");
+            var unit = AskForUnit(player.Units);
+            var action = AskForAction(city);
+            switch (action)
+            {
+                case 1:
+                    var direction = AskForDirection();
+                    unit.Move(direction, city);
+                    break;
+                case 2:
+                    Console.WriteLine("Choose your opponent's unit: ");
+                    var opponentsUnit = AskForUnit(opponent.Units);
+                    unit.DoAttack(opponentsUnit);
+                    if (!opponentsUnit.IsAlive())
+                    {
+                        Console.WriteLine($"You killed your opponent's {opponentsUnit.Name}");
+                        opponent.RemoveUnit(opponentsUnit, city);
+                    }
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    animal = player.GetAnimal(city);
+                    var animal1 = (IAnimal)animal![1];
+                    animal1.Eat(player);
+                    break;
+            }
+        }
+
+        private static void OpponentsStep(City city)
+        {
+            var player = city.Players[0];
+            var opponent = city.Players[1];
+            var victim = opponent.GetVictim(player); // сначала его, потом чужой
+            IUnit[]? animal = null;
+            if (city.Animals.Count != 0)
+            {
+                animal = opponent.GetAnimal(city); // сначала юнит, потом животное
+            }
+            var isAnimalFeeded = false;
+            if (animal != null)
+            {
+                var animal1 = (IAnimal)animal[1];
+                if (animal1.Owner == null)
+                {
+                    Console.WriteLine($"Your opponent feeds {animal1.Name}!");
+                    animal1.Eat(opponent);
+                    isAnimalFeeded = true;
+                }
+            }
+            if (victim != null & !isAnimalFeeded)
+            {
+                Console.WriteLine($"Your opponent attacks your {victim?[1].Name} by his {victim?[0].Name}!");
+                victim?[0].DoAttack(victim[1]);
+                if (!victim![1].IsAlive())
                 {
                     player.RemoveUnit(victim[1], city);
                     Console.WriteLine($"You lose your {victim[1].Name}");
                 }
             }
-            else
+            else if (!isAnimalFeeded)
             {
                 Random rnd = new Random();
                 var unitId = rnd.Next(0, opponent.Units.Count);
@@ -140,16 +191,19 @@ namespace LR2
                         directionAsString = "r";
                         break;
                 }
-                opponent.Units[unitId].Move(opponent.Units[unitId], directionAsString, city);
+
+                opponent.Units[unitId].Move(directionAsString, city);
                 if (opponent.Units[unitId].X == x & opponent.Units[unitId].Y == y)
                 {
-                    OpponentsStep(opponent, player, city);
+                    OpponentsStep(city);
                 }
                 else
                 {
                     Console.WriteLine($"Your opponent moves his {opponent.Units[unitId].Name}!");
                 }
             }
+            city.Players[0] = player;
+            city.Players[1] = opponent;
         }
 
         private static int Win(Player player, Player opponent)
@@ -168,34 +222,77 @@ namespace LR2
             return answer is "u" or "d" or "r" or "l" ? answer : AskForDirection();
         }
 
-        private static int AskForAction()
+        private static int AskForAction(City city)
         {
-            Console.WriteLine("Choose the action: 1 - move, 2 - attack, 3 - skip");
-            var answer = Convert.ToInt32(Console.ReadLine());
-            if (answer == 1 || answer == 2 || answer == 3)
+            var player = city.Players[0];
+            var opponent = city.Players[1];
+            int answer;
+            var victim = player.GetVictim(opponent);
+            IUnit[]? animal = null;
+            var isAnimalHere = false;
+            if (city.Animals.Count != 0)
             {
-                return answer;
+                animal = player.GetAnimal(city); // сначала юнит, потом животное
+                if (animal != null)
+                {
+                    isAnimalHere = true;
+                }
+            }
+            if (isAnimalHere & victim != null & player.Cash > 0)
+            {
+                Console.WriteLine($"Choose the action: 1 - move, 2 - attack, 3 - skip, 4 - feed {animal?[1].Name}");
+                answer = Convert.ToInt32(Console.ReadLine());
+                if (answer == 1 || answer == 2 || answer == 3 || answer == 4)
+                {
+                    return answer;
+                }
+            }
+            if (!isAnimalHere & victim != null )
+            {
+                Console.WriteLine($"Choose the action: 1 - move, 2 - attack, 3 - skip");
+                answer = Convert.ToInt32(Console.ReadLine());
+                if (answer == 1 || answer == 2 || answer == 3)
+                {
+                    return answer;
+                }
             }
 
-            return AskForAction();
+            if (isAnimalHere & victim == null & player.Cash > 0)
+            {
+                Console.WriteLine($"Choose the action: 1 - move, 3 - skip, 4 - feed {animal?[1].Name}");
+                answer = Convert.ToInt32(Console.ReadLine());
+                if (answer == 1 || answer == 3 || answer == 4)
+                {
+                    return answer;
+                }
+            }
+            if (!isAnimalHere & victim == null)
+            {
+                Console.WriteLine("Choose the action: 1 - move, 3 - skip");
+                answer = Convert.ToInt32(Console.ReadLine());
+                if (answer == 1 || answer == 3)
+                {
+                    return answer;
+                }
+            }
+            city.Players[0] = player;
+            city.Players[1] = opponent;
+            return AskForAction(city);
         }
+
 
         private static IUnit AskForUnit(List<IUnit> units)
         {
             foreach (var unit in units)
             {
-                Console.WriteLine($"{unit.Id}. {unit.Name}");
+                Console.WriteLine($"{unit.ShortName}. {unit.Name}");
             }
 
-            var selected = Convert.ToInt32(Console.ReadLine());
-            foreach (var unit in units)
+            var selected = Console.ReadLine();
+            foreach (var unit in units.Where(unit => unit.ShortName == selected))
             {
-                if (unit.Id == selected)
-                {
-                    return unit;
-                }
+                return unit;
             }
-
             return AskForUnit(units);
         }
     }
