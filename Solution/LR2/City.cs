@@ -5,12 +5,13 @@ using LR2.Units;
 
 namespace LR2;
 
-public class City(int cols, int rows, int swampsNumber, int hillsNumber, int treesNumber)
+public class City(int cols, int rows, int swampsNumber, int hillsNumber, int treesNumber, int catChance)
 {
     private int SwampsNumber { get; } = swampsNumber;
     private int HillsNumber { get; } = hillsNumber;
     private int TreesNumber { get; } = treesNumber;
     public int Cols { get; } = cols;
+    public int CatChanсe { get; } = catChance;
     public int Rows { get; } = rows;
     public const string TreeType = "T";
     public const string SwampType = "S";
@@ -53,8 +54,9 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
                 wayrange = Math.Floor(count);
                 return Convert.ToInt32(wayrange);
             }
+
             var fine = GetFine(unit, CityObjects[y][x].Obj);
-            if (count+fine <= unit.MovementRange)
+            if (count + fine <= unit.MovementRange)
             {
                 count += fine;
                 if (CityObjects[y][x].Obj == TreeType & Animals.Count == 0)
@@ -62,49 +64,68 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
                     int[]? catCoordinates = FindFreePlace(y, x);
                     if (catCoordinates != null)
                     {
-                        _factory!.CreateCat(catCoordinates[1], catCoordinates[0]);
+                        var rnd = new Random();
+                        var rnd1 = rnd.Next(100);
+                        if (rnd1 <= CatChanсe)
+                        {
+                            _factory!.CreateCat(catCoordinates[1], catCoordinates[0]);
+                        }
                     }
                 }
             }
         }
+
         wayrange = Math.Floor(count);
         return Convert.ToInt32(wayrange);
     }
 
     private int[]? FindFreePlace(int y, int x)
     {
-        try
+        if (y != Rows - 1)
         {
-            if (CityObjects[y+1][x].Obj == "*")
+            if (CityObjects[y + 1][x].Obj == "*")
             {
                 return [y + 1, x];
             }
-            if (CityObjects[y][x+1].Obj == "*")
+            if (x != Cols - 1)
             {
-                return [y, x+1];        
-            }
-            if (CityObjects[y+1][x+1].Obj == "*")
-            {
-                return [y + 1, x + 1];            
-            }
-            if (CityObjects[y-1][x].Obj == "*")
-            {
-                return [y - 1, x];         
-            }
-            if (CityObjects[y][x-1].Obj == "*")
-            {
-                return [y, x-1];        
-            }
-            if (CityObjects[y-1][x-1].Obj == "*")
-            {
-                return [y-1,x-1];    
+                if (CityObjects[y + 1][x + 1].Obj == "*")
+                {
+                    return [y + 1, x + 1];
+                }
             }
         }
-        catch (IndexOutOfRangeException e)
+        if (y != 0)
         {
-            Console.WriteLine(e);
-            throw;
+            if (CityObjects[y - 1][x].Obj == "*")
+            {
+                return [y - 1, x];
+            }
+            if (x != 0)
+            {
+                if (CityObjects[y - 1][x - 1].Obj == "*")
+                {
+                    return [y - 1, x - 1];
+                }
+            }
         }
+
+        if (x != Cols - 1)
+        {
+            if (CityObjects[y][x + 1].Obj == "*")
+            {
+                return [y, x + 1];
+            }
+        }
+
+        if (x != 0)
+        {
+            if (CityObjects[y][x - 1].Obj == "*")
+            {
+                return [y, x - 1];
+            }
+        }
+
         return null;
     }
 
@@ -145,6 +166,7 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
                 return 1;
         }
     }
+
     private static int[] FindCoordinates(int x, int y, string type)
     {
         switch (type)
@@ -166,8 +188,7 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
         return [x, y];
     }
 
-    
-    
+
     public void GenerateCity()
     {
         _factory = new UnitsFactory(this);
@@ -178,7 +199,7 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
     public void OutputCity()
     {
         Console.Write("|    | ");
-        for (int i = 1; i < Cols+1; i++)
+        for (int i = 1; i < Cols + 1; i++)
         {
             if (i < 10)
             {
@@ -189,26 +210,28 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
                 Console.Write($"{i} | ");
             }
         }
+
         Console.WriteLine();
         for (int i = 0; i < Rows; i++)
         {
             if (i < 9)
             {
-                Console.Write($"| {i+1}  |");
+                Console.Write($"| {i + 1}  |");
             }
             else
             {
-                Console.Write($"| {i+1} |");
+                Console.Write($"| {i + 1} |");
             }
 
             for (int j = 0; j < Cols; j++)
             {
                 Console.Write($" {CityObjects[i][j].Obj}  |");
             }
+
             Console.WriteLine();
         }
     }
-    
+
     private void FillTheCity()
     {
         for (var i = 0; i < Cols; i++)
@@ -218,6 +241,7 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
                 CityObjects[i][j] = new Square("*");
             }
         }
+
         PlaceObjects(SwampsNumber, SwampType);
         PlaceObjects(HillsNumber, HillType);
         PlaceObjects(TreesNumber, TreeType);
@@ -235,6 +259,7 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
                 rnd1 = rnd.Next(1, Cols);
                 rnd2 = rnd.Next(1, Rows);
             }
+
             PlaceObject(rnd1, rnd2, type);
         }
     }
@@ -243,7 +268,7 @@ public class City(int cols, int rows, int swampsNumber, int hillsNumber, int tre
     {
         CityObjects[y][x].Obj = type;
     }
-    
+
     private static Square[][] GenerateMatrix(int cols, int rows)
     {
         Square[][] result = new Square[rows][];

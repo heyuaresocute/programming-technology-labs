@@ -13,6 +13,7 @@ namespace LR2
             var hillsNumber = 0;
             var treesNumber = 0;
             var startcash = 0;
+            var catChance = 20;
 
             Console.WriteLine("Before you start, please, enter the size of your city (two numbers - columns and rows)");
             var cols = Convert.ToInt32(Console.ReadLine());
@@ -42,7 +43,7 @@ namespace LR2
                     break;
             }
 
-            var city = new City(cols, rows, swampsNumber, hillsNumber, treesNumber);
+            var city = new City(cols, rows, swampsNumber, hillsNumber, treesNumber, catChance);
             city.GenerateCity();
             var player = new Player(startcash, "You");
             var opponent = new Player(startcash, "Opponent");
