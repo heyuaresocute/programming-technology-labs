@@ -231,10 +231,10 @@ public class Cat(
         }
         else
         {
-            city.PlaceObject(X, Y, "*");
+            city.PlaceObject(X, Y, new Square("*", 1, 1, 1, 1));
             X = x;
             Y = y;
-            city.PlaceObject(X, Y, "C");
+            city.PlaceObject(X, Y, new Square(ShortName, 1, 1, 1, 1));
             Console.WriteLine(Owner != null ? $"{Owner.Type} {Name} has moved" : $"{Name} has moved");
         }
     }

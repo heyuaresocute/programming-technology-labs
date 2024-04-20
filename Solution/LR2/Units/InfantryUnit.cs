@@ -54,10 +54,10 @@ public class InfantryUnit(string name, int health, int attackNumber, int attackR
                     break;
             }
         }
-        city.PlaceObject(X, Y, "*");
+        city.PlaceObject(X, Y, new Square("*", 1, 1, 1, 1));
         X = x;
         Y = y;
-        city.PlaceObject(X, Y, $"{ShortName}");
+        city.PlaceObject(X, Y, new Square(ShortName, 1, 1, 1, 1));
     }
     public void DoAttack(IUnit victim)
     {

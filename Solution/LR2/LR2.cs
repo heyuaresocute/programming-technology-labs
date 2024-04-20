@@ -1,49 +1,41 @@
 ﻿using LR2.Factories;
 using LR2.Interfaces;
+using Newtonsoft.Json;
 
 namespace LR2
 {
     internal static class Lab
     {
         private const int ContinueGame = 2;
+        private const string Path =
+            "/Users/heyuaresocute/projects/programming-technology-labs/Solution/LR3/jsons/obstacles.json";
 
         private static void Main()
         {
-            var swampsNumber = 0;
-            var hillsNumber = 0;
-            var treesNumber = 0;
-            var startcash = 0;
-            var catChance = 20;
-
+            var startcash = 69;
+            var catChanse = 20;
+            Dictionary<string, double[]>? obstaclesDictionary;
+            try
+            {
+                string json = File.ReadAllText(Path); 
+                obstaclesDictionary = JsonConvert.DeserializeObject<Dictionary<string, double[]>>(json);
+            }
+            catch (Exception)
+            {
+                obstaclesDictionary = new Dictionary<string, double[]>()
+                {
+                    ["S"] = [3, 1.5, 1.8, 2.2, 1.5], // count, Inf, Arch, Horse, Cat
+                    ["H"] = [1, 2, 2.2, 1.2, 2],
+                    ["T"] = [4, 1.2, 1, 1.5, 1]
+                };
+                string json = JsonConvert.SerializeObject(obstaclesDictionary);
+                File.WriteAllText(Path, json);
+            }
             Console.WriteLine("Before you start, please, enter the size of your city (two numbers - columns and rows)");
             var cols = Convert.ToInt32(Console.ReadLine());
             var rows = Convert.ToInt32(Console.ReadLine());
-
-            Console.WriteLine("Also, please, choose the difficulty (1 - easy, 2 - normal, 3 - hard)");
-            var x = Convert.ToInt32(Console.ReadLine());
-            switch (x)
-            {
-                case 1:
-                    swampsNumber = 3;
-                    hillsNumber = 1;
-                    treesNumber = 4;
-                    startcash = 69;
-                    break;
-                case 2:
-                    swampsNumber = 5;
-                    hillsNumber = 4;
-                    treesNumber = 6;
-                    startcash = 55;
-                    break;
-                case 3:
-                    swampsNumber = 6;
-                    hillsNumber = 5;
-                    treesNumber = 7;
-                    startcash = 48;
-                    break;
-            }
-
-            var city = new City(cols, rows, swampsNumber, hillsNumber, treesNumber, catChance);
+            var city = new City(cols, rows, catChanse);
+            AddObstacles(city, obstaclesDictionary!);
             city.GenerateCity();
             var player = new Player(startcash, "You");
             var opponent = new Player(startcash, "Opponent");
@@ -54,6 +46,22 @@ namespace LR2
             player.SelectUnits(unitsFactory, city);
             opponent.SelectUnits(unitsFactory, city);
             Start(city);
+        }
+
+        private static void AddObstacles(City city, Dictionary<string, double[]> dictionary)
+        {
+            foreach (var obstacle in dictionary)
+            {
+                AddObstacle(city, obstacle.Value[0] , obstacle.Key, obstacle.Value[1], obstacle.Value[3], obstacle.Value[2], obstacle.Value[4]);
+            }
+        }
+
+        private static void AddObstacle(City city, double number, string type, double fineForInfantry, double fineForHorse, double fineForArcher, double fineForCat)
+        {
+            for (int i = 0; i < number; i++)
+            {
+                city.CityObstacles.Add(new Square(type, fineForInfantry, fineForHorse, fineForArcher, fineForCat));
+            }
         }
 
         private static void Start(City city)
@@ -104,11 +112,7 @@ namespace LR2
         {
             var player = city.Players[0];
             var opponent = city.Players[1];
-            IUnit[]? animal = null;
-            if (city.Animals.Count != 0)
-            {
-                animal = opponent.GetAnimal(city); // сначала юнит, потом животное
-            }
+            IUnit[]? animal;
             Console.WriteLine("Choose your unit: ");
             var unit = AskForUnit(player.Units);
             var action = AskForAction(city);

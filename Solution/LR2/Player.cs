@@ -51,7 +51,7 @@ public class Player(int cash, string type)
             else
             {
                 Cash += unit.Cost;
-                city.PlaceObject(unit.X, unit.Y, "*");
+                city.PlaceObject(unit.X, unit.Y, new Square("*", 1, 1, 1, 1));
                 if (Type == "You")
                 {
                     Console.WriteLine($"You can't select {unit.Name}, because your cash now is {Cash}");
@@ -101,7 +101,7 @@ public class Player(int cash, string type)
     public void RemoveUnit(IUnit unit, City city)
     {
         Units.Remove(unit);
-        city.PlaceObject(unit.X, unit.Y, "*");
+        city.PlaceObject(unit.X, unit.Y, new Square("*", 1, 1, 1, 1));
     }
 
     public IUnit[]? GetVictim(Player opponent)
