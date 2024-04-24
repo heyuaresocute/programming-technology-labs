@@ -1,20 +1,22 @@
 using LR2.Factories;
 using LR2.Interfaces;
+using LR2.MapProperties;
+using Newtonsoft.Json;
 
 namespace LR2;
 
-public class City(int cols, int rows, int catChance)
+public class City(int catChance, Map map)
 {
-    public int Cols { get; } = cols;
+    public int Cols { get; } = map.Cols;
     public int CatChanсe { get; } = catChance;
-    public int Rows { get; } = rows;
-    public const string TreeType = "T";
-    public const string SwampType = "S";
-    public const string HillType = "H";
+    public int Rows { get; } = map.Rows;
+
+    private const string PathToJsons =
+        "/Users/heyuaresocute/projects/programming-technology-labs/Solution/LR3/jsons/";
     public List<IAnimal> Animals { get; } = [];
     public List<Player> Players { get; } = [];
     public Square[][] CityObjects { get; set; } = [];
-    public List<Square> CityObstacles { get; set; } = [];
+    public Map Map { get; } = map;
     private UnitsFactory? _factory;
 
     public int GetWayRange(string direction, IUnit unit)
@@ -55,7 +57,7 @@ public class City(int cols, int rows, int catChance)
             if (count + fine <= unit.MovementRange)
             {
                 count += fine;
-                if (CityObjects[y][x].Obj == TreeType & Animals.Count == 0)
+                if (CityObjects[y][x].Obj == "T" & Animals.Count == 0)
                 {
                     int[]? catCoordinates = FindFreePlace(y, x);
                     if (catCoordinates != null)
@@ -168,6 +170,7 @@ public class City(int cols, int rows, int catChance)
                 Console.Write($"{i} | ");
             }
         }
+        Console.Write($"Wood: {Players[0].Wood}     Stone: {Players[0].Stone}");
 
         Console.WriteLine();
         for (int i = 0; i < Rows; i++)
@@ -199,19 +202,28 @@ public class City(int cols, int rows, int catChance)
                 CityObjects[i][j] = new Square("*", 1, 1, 1, 1);
             }
         }
-
-        foreach (var obstacle in CityObstacles)
+        List<ObstacleType> obstacleTypes = GetObstacles();
+        foreach (var obstacle in Map.Obstacles)
         {
             var rnd = new Random();
-            var rnd1 = rnd.Next(1, Cols);
-            var rnd2 = rnd.Next(1, Rows);
-            if (CityObjects[rnd1][rnd2].Obj != "*")
+            if (CityObjects[obstacle.X][obstacle.Y].Obj != "*")
             {
-                rnd1 = rnd.Next(1, Cols);
-                rnd2 = rnd.Next(1, Rows);
+                obstacle.X = rnd.Next(1, Cols);
+                obstacle.Y = rnd.Next(1, Rows);
             }
-            PlaceObject(rnd1, rnd2, obstacle);
+
+            ObstacleType obstacleProperties = new ObstacleType("*", 1, 1, 1, 1, 1);
+
+            foreach (var obstacleType in obstacleTypes)
+            {
+                if (obstacleType.Designation == obstacle.Designation)
+                {
+                    obstacleProperties = obstacleType;
+                }
+            }
+            PlaceObject(obstacle.X, obstacle.Y, new Square(obstacle.Designation, obstacleProperties.InfantryFine, obstacleProperties.HorseFine, obstacleProperties.ArcherFine, obstacleProperties.CatFine));
         }
+        
     }
 
     public void PlaceObject(int x, int y, Square object1)
@@ -225,5 +237,17 @@ public class City(int cols, int rows, int catChance)
         for (var i = 0; i < rows; ++i)
             result[i] = new Square[cols];
         return result;
+    }
+    
+    public static List<ObstacleType> GetObstacles()
+    {
+        string json = File.ReadAllText(GetPathToFile("obstacles.json")); 
+        var obstacles = JsonConvert.DeserializeObject<List<ObstacleType>>(json)!;
+        return obstacles!;
+    }
+    
+    public static string GetPathToFile(string filename)
+    {
+        return PathToJsons + filename;
     }
 }

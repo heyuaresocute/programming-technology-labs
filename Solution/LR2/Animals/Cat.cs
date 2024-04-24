@@ -1,4 +1,5 @@
 using LR2.Interfaces;
+using LR2.MapProperties;
 
 namespace LR2.Animals;
 
@@ -21,6 +22,8 @@ public class Cat(
     public int Defence { get; set; } = 0;
     public int Cost { get; set; } = 3;
     public int Bleed { get; set; } = 0;
+    public int Stone { get; set; } = 5;
+    public int Wood { get; set; } = 5;
     private int BleedingTime { get; } = bleedingTime;
     private int BleedingDamage { get; } = bleedingDamage;
     public int MovementRange { get; set; } = movementRange;
@@ -164,9 +167,13 @@ public class Cat(
         {
             Name = name;
             ShortName = Convert.ToString(name[0]);
-            if (ShortName == City.TreeType || ShortName == City.SwampType || ShortName == City.HillType)
+            List<ObstacleType> obstacleTypes = City.GetObstacles();
+            foreach (var obstacleType in obstacleTypes)
             {
-                ShortName = "C";
+                if (ShortName == obstacleType.Designation)
+                {
+                    ShortName = "C";
+                }
             }
         }
         else

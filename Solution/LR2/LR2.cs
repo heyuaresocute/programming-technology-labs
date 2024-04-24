@@ -1,5 +1,6 @@
 ﻿using LR2.Factories;
 using LR2.Interfaces;
+using LR2.MapProperties;
 using Newtonsoft.Json;
 
 namespace LR2
@@ -7,38 +8,35 @@ namespace LR2
     internal static class Lab
     {
         private const int ContinueGame = 2;
-        private const string Path =
-            "/Users/heyuaresocute/projects/programming-technology-labs/Solution/LR3/jsons/obstacles.json";
+        private const string PathToJsons =
+            "/Users/heyuaresocute/projects/programming-technology-labs/Solution/LR3/jsons/";
 
         private static void Main()
         {
             var startcash = 69;
-            var catChanse = 20;
-            Dictionary<string, double[]>? obstaclesDictionary;
-            try
+            var catChanse = 100;
+            var wood = 30;
+            var stone = 30;
+            Console.WriteLine("Now you have this maps:");
+            List<Map> maps = GetMaps();
+            var mapsAsIData = new List<IData>(maps);
+            OutputList(mapsAsIData);
+            Console.WriteLine("Choose the map. Please write the designation:");
+            var designation = Console.ReadLine();
+            Map map = new Map("", 0, 0);
+            foreach (var map1 in maps)
             {
-                string json = File.ReadAllText(Path); 
-                obstaclesDictionary = JsonConvert.DeserializeObject<Dictionary<string, double[]>>(json);
-            }
-            catch (Exception)
-            {
-                obstaclesDictionary = new Dictionary<string, double[]>()
+                if (map1.Designation == designation)
                 {
-                    ["S"] = [3, 1.5, 1.8, 2.2, 1.5], // count, Inf, Arch, Horse, Cat
-                    ["H"] = [1, 2, 2.2, 1.2, 2],
-                    ["T"] = [4, 1.2, 1, 1.5, 1]
-                };
-                string json = JsonConvert.SerializeObject(obstaclesDictionary);
-                File.WriteAllText(Path, json);
+                    map = map1;
+                }
             }
-            Console.WriteLine("Before you start, please, enter the size of your city (two numbers - columns and rows)");
-            var cols = Convert.ToInt32(Console.ReadLine());
-            var rows = Convert.ToInt32(Console.ReadLine());
-            var city = new City(cols, rows, catChanse);
-            AddObstacles(city, obstaclesDictionary!);
+            map.Output();
+            
+            var city = new City(catChanse, map);
             city.GenerateCity();
-            var player = new Player(startcash, "You");
-            var opponent = new Player(startcash, "Opponent");
+            var player = new Player(startcash, wood, stone, "You");
+            var opponent = new Player(startcash, wood, stone, "Opponent");
             city.Players.Add(player);
             city.Players.Add(opponent);
             var unitsFactory = new UnitsFactory(city);
@@ -48,20 +46,11 @@ namespace LR2
             Start(city);
         }
 
-        private static void AddObstacles(City city, Dictionary<string, double[]> dictionary)
+        private static List<Map> GetMaps()
         {
-            foreach (var obstacle in dictionary)
-            {
-                AddObstacle(city, obstacle.Value[0] , obstacle.Key, obstacle.Value[1], obstacle.Value[3], obstacle.Value[2], obstacle.Value[4]);
-            }
-        }
-
-        private static void AddObstacle(City city, double number, string type, double fineForInfantry, double fineForHorse, double fineForArcher, double fineForCat)
-        {
-            for (int i = 0; i < number; i++)
-            {
-                city.CityObstacles.Add(new Square(type, fineForInfantry, fineForHorse, fineForArcher, fineForCat));
-            }
+            string json = File.ReadAllText(GetPathToFile("maps.json"));
+            var maps = JsonConvert.DeserializeObject<List<Map>>(json);
+            return maps!;
         }
 
         private static void Start(City city)
@@ -113,6 +102,17 @@ namespace LR2
             var player = city.Players[0];
             var opponent = city.Players[1];
             IUnit[]? animal;
+            Console.WriteLine("1 - build something, 2 - update building, 3 - skip");
+            var a = Convert.ToInt16(Console.ReadLine());
+            switch (a)
+            {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
             Console.WriteLine("Choose your unit: ");
             var unit = AskForUnit(player.Units);
             var action = AskForAction(city);
@@ -129,7 +129,16 @@ namespace LR2
                     if (!opponentsUnit.IsAlive())
                     {
                         Console.WriteLine($"You killed your opponent's {opponentsUnit.Name}");
+                        Console.WriteLine($"You owned {opponentsUnit.Wood} wood and {opponentsUnit.Stone} stone");
+                        player.Wood += opponentsUnit.Wood;
+                        player.Stone += opponentsUnit.Stone;
                         opponent.RemoveUnit(opponentsUnit, city);
+                    }
+                    else
+                    {
+                        Console.WriteLine("You owned 1 wood and 1 stone");
+                        player.Wood += 1;
+                        player.Stone += 1;
                     }
                     break;
                 case 3:
@@ -299,6 +308,19 @@ namespace LR2
                 return unit;
             }
             return AskForUnit(units);
+        }
+        
+        public static string GetPathToFile(string filename)
+        {
+            return PathToJsons + filename;
+        }
+        
+        private static void OutputList(List<IData> list)
+        {
+            foreach (var obj in list)
+            {
+                obj.Output();
+            }
         }
     }
 }

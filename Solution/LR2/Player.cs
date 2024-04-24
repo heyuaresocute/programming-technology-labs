@@ -3,11 +3,16 @@ using LR2.Interfaces;
 
 namespace LR2;
 
-public class Player(int cash, string type)
+public class Player(int cash, int wood, int stone, string type)
 {
     public string Type { get; } = type;
     public List<IUnit> Units { get; set; } = [];
     public int Cash { get; set; } = cash;
+
+    public int Wood { get; set; } = wood;
+
+    public int Stone { get; set; } = stone;
+    
     public void SelectUnits(UnitsFactory factory, City city)
     {
         var count = 0;

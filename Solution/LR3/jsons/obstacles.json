@@ -1,1 +1,1 @@
-{"S":[3.0,1.5,1.8,2.2,1.5],"H":[1.0,2.0,2.2,1.2,2.0],"T":[4.0,1.2,1.0,1.5,1.0]}
+[{"Designation":"Default","InfantryFine":0.0,"ArcherFine":0.0,"HorseFine":0.0,"CatFine":0.0,"StandartCount":0},{"Designation":"S","InfantryFine":1.5,"ArcherFine":1.8,"HorseFine":2.2,"CatFine":1.5,"StandartCount":3},{"Designation":"H","InfantryFine":2.0,"ArcherFine":2.2,"HorseFine":1.2,"CatFine":2.0,"StandartCount":3},{"Designation":"T","InfantryFine":1.2,"ArcherFine":1.0,"HorseFine":1.5,"CatFine":1.0,"StandartCount":3}]

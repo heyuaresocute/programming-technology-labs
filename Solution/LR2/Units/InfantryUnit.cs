@@ -15,6 +15,8 @@ public class InfantryUnit(string name, int health, int attackNumber, int attackR
     public int X { get; set; } = x;
     public int Cost { get; set; } = cost;
     public int Bleed { get; set; } = 0;
+    public int Stone { get; set; } = 10;
+    public int Wood { get; set; } = 10;
 
     public void Move(string direction, City city)
     {

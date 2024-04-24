@@ -13,6 +13,8 @@ public interface IUnit
     int X { get; }
     int Cost { get; set; } 
     int Bleed { get; set; }
+    int Stone { get; set; }
+    int Wood { get; set; }
     void Move(string direction, City city);
     void DoAttack(IUnit victim);
     bool IsAlive();
