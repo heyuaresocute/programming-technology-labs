@@ -1,4 +1,5 @@
-﻿using LR2.Factories;
+﻿using LR2.Buildings;
+using LR2.Factories;
 using LR2.Interfaces;
 using LR2.MapProperties;
 using Newtonsoft.Json;
@@ -102,17 +103,28 @@ namespace LR2
             var player = city.Players[0];
             var opponent = city.Players[1];
             IUnit[]? animal;
+            foreach (var building in city.CityBuildings)
+            {
+                if (building is Market)
+                {
+                    var market = (Market)building;
+                    market.AskToChangeMaterials(player);
+                }
+            }
             Console.WriteLine("1 - build something, 2 - update building, 3 - skip");
             var a = Convert.ToInt16(Console.ReadLine());
             switch (a)
             {
                 case 1:
+                    AddBuilding(city);
                     break;
                 case 2:
+                    ImproveBuilding(city);
                     break;
                 case 3:
                     break;
             }
+            city.OutputCity();
             Console.WriteLine("Choose your unit: ");
             var unit = AskForUnit(player.Units);
             var action = AskForAction(city);
@@ -149,6 +161,100 @@ namespace LR2
                     animal1.Eat(player);
                     break;
             }
+        }
+
+        private static void ImproveBuilding(City city)
+        {
+            var player = city.Players[0];
+            Console.WriteLine("Choose the building: ");
+            List<IImprovableBuilding> buildings = [];
+            foreach (var building in city.CityBuildings)
+            {
+                if (building is IImprovableBuilding)
+                {
+                    buildings.Add((IImprovableBuilding)building);
+                }
+            }
+
+            if (buildings.Count == 0)
+            {
+                Console.WriteLine("You can't improve anything");
+            }
+            else
+            {
+                foreach (var building in buildings)
+                {
+                    building.Output();
+                }
+                var a = Console.ReadLine();
+                if (a == null)
+                {
+                    ImproveBuilding(city);
+                }
+                else
+                {
+                    IBuilding? building = FindBuilding(a);
+                    if (building == null)
+                    {
+                        ImproveBuilding(city);
+                    }
+                    else
+                    {
+                        if (player.Stone < building.StoneToImprove || player.Wood < building.WoodToImprove )
+                        {
+                            Console.WriteLine("You cant improve this");
+                            AddBuilding(city);
+                        }
+                        else
+                        {
+                            var buildingAsImprovable = (IImprovableBuilding)building;
+                            buildingAsImprovable.Improve(player, city);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void AddBuilding(City city)
+        {
+            var player = city.Players[0];
+            Console.WriteLine("Choose the building: h - hospital, b - blacksmith, a - arsenal, t - tavern, m - market"); // TODO add buildings
+            var a = Console.ReadLine();
+            if (a == null)
+            {
+                AddBuilding(city);
+            }
+            else
+            {
+                IBuilding? building = FindBuilding(a);
+                if (building == null)
+                {
+                    AddBuilding(city);
+                }
+                else
+                {
+                    if (player.Stone < building.StoneToCreate || player.Wood < building.WoodToCreate )
+                    {
+                        Console.WriteLine("You cant build this");
+                        AddBuilding(city);
+                    }
+                    else
+                    {
+                        building.Create(player, city);
+                    }
+                }
+            }
+            
+        }
+
+        private static IBuilding? FindBuilding(string s)
+        {
+            List<IBuilding> buildingsCollection = GetBuildingsCollection();
+            foreach (var building in buildingsCollection.Where(building => building.Name == s))
+            {
+                return building;
+            }
+            return null;
         }
 
         private static void OpponentsStep(City city)
@@ -321,6 +427,17 @@ namespace LR2
             {
                 obj.Output();
             }
+        }
+
+        private static List<IBuilding> GetBuildingsCollection()
+        {
+            List<IBuilding> buildingsCollection = [];
+            buildingsCollection.Add(new Hospital());
+            buildingsCollection.Add(new Blacksmith());
+            buildingsCollection.Add(new Arsenal());
+            buildingsCollection.Add(new Tavern());
+            buildingsCollection.Add(new Market());
+            return buildingsCollection;
         }
     }
 }

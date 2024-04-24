@@ -1,3 +1,4 @@
+using LR2.Buildings;
 using LR2.Factories;
 using LR2.Interfaces;
 using LR2.MapProperties;
@@ -10,12 +11,15 @@ public class City(int catChance, Map map)
     public int Cols { get; } = map.Cols;
     public int CatChanсe { get; } = catChance;
     public int Rows { get; } = map.Rows;
+    public double TavernBonus { get; set; } = 0;
 
     private const string PathToJsons =
         "/Users/heyuaresocute/projects/programming-technology-labs/Solution/LR3/jsons/";
     public List<IAnimal> Animals { get; } = [];
     public List<Player> Players { get; } = [];
     public Square[][] CityObjects { get; set; } = [];
+    
+    public List<IBuilding> CityBuildings { get; set; } = [];
     public Map Map { get; } = map;
     private UnitsFactory? _factory;
 
@@ -53,7 +57,11 @@ public class City(int catChance, Map map)
                 return Convert.ToInt32(wayrange);
             }
 
-            var fine = CityObjects[y][x].GetFine(unit);
+            var fine = CityObjects[y][x].GetFine(unit) - TavernBonus;
+            if (fine < 1)
+            {
+                fine = 1;
+            }
             if (count + fine <= unit.MovementRange)
             {
                 count += fine;
@@ -170,7 +178,7 @@ public class City(int catChance, Map map)
                 Console.Write($"{i} | ");
             }
         }
-        Console.Write($"Wood: {Players[0].Wood}     Stone: {Players[0].Stone}");
+        Console.Write($"Wood: {Players[0].Wood}     Stone: {Players[0].Stone}  Money: {Players[0].Cash}   TavernBonus: {TavernBonus}");
 
         Console.WriteLine();
         for (int i = 0; i < Rows; i++)
