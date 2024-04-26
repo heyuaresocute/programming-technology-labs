@@ -4,24 +4,17 @@ namespace LR2.Buildings;
 
 public class Market: IBuilding
 {
-    public string Name { get; } = "m";
+    public string Designation { get; set; } = "m";
+    public string Name { get; } = "Market";
     public int WoodToCreate { get; } = 5;
-    public int WoodToImprove { get; } = 0;
     public int StoneToCreate { get; } = 5;
-    public int StoneToImprove { get; } = 0;
     public int Level { get; set; } = 0;
     public void Create(Player player, City city)
     {
         bool flag = true;
-        var count = 0;
         foreach (var building in city.CityBuildings.OfType<Market>())
         {
-            count += 1;
-        }
-
-        if (count == 4)
-        {
-            Console.WriteLine("You can have only 4 markets");
+            Console.WriteLine("You can have only 1 market");
             flag = false;
         }
         if (flag)
@@ -32,10 +25,10 @@ public class Market: IBuilding
             player.Stone -= StoneToCreate;
             player.Wood -= WoodToCreate;
             city.CityBuildings.Add(this);
-            city.PlaceObject(x, y, new Square(Name, 1, 1, 1, 1));
+            city.PlaceObject(x, y, new Square(Designation, 1, 1, 1, 1));
             city.OutputCity();
             AskToChangeMaterials(player);
-            
+            Level += 1;
         }
     }
 
@@ -64,7 +57,9 @@ public class Market: IBuilding
 
     public void Output()
     {
-        Console.WriteLine($"{Name}: level {Level}");
+        Console.WriteLine(Level > 0
+            ? $"{Name}: level {Level} - {Designation}"
+            : $"{Name}: wood - {WoodToCreate}, stone - {StoneToCreate} - {Designation}");
     }
 
     public void SwitchMaterials(Player player, int type, int woodToStone, int woodToMoney, int stoneToMoney)

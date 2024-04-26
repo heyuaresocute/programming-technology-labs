@@ -4,7 +4,8 @@ namespace LR2.Buildings;
 
 public class Blacksmith: IImprovableBuilding
 {
-    public string Name { get; } = "b";
+    public string Designation { get; set; } = "b";
+    public string Name { get; } = "Blacksmith";
     public int WoodToCreate { get; } = 10;
     public int WoodToImprove { get; } = 5;
     public int StoneToCreate { get; } = 16;
@@ -27,17 +28,21 @@ public class Blacksmith: IImprovableBuilding
             player.Stone -= StoneToCreate;
             player.Wood -= WoodToCreate;
             city.CityBuildings.Add(this);
-            city.PlaceObject(x, y, new Square(Name, 1, 1, 1, 1));
+            city.PlaceObject(x, y, new Square(Designation, 1, 1, 1, 1));
             foreach (var unit in player.Units)
             {
                 unit.AttackDamage += 1;
             }
+
+            Level += 1;
         }
     }
 
     public void Output()
     {
-        Console.WriteLine($"{Name}: level {Level}");
+        Console.WriteLine(Level > 0
+            ? $"{Name}: level {Level}, wood - {WoodToImprove}, stone - {StoneToImprove} - {Designation}"
+            : $"{Name}: wood - {WoodToCreate}, stone - {StoneToCreate} - {Designation}");
     }
 
     public void Improve(Player player, City city)

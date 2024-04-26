@@ -4,12 +4,13 @@ namespace LR2.Buildings;
 
 public class Tavern: IImprovableBuilding
 {
-    public string Name { get; } = "t";
+    public string Designation { get; set; } = "t";
+    public string Name { get; } = "Tavern";
     public int WoodToCreate { get; } = 10;
     public int WoodToImprove { get; } = 5;
     public int StoneToCreate { get; } = 15;
     public int StoneToImprove { get; } = 10;
-    public int Level { get; set; }
+    public int Level { get; set; } = 0;
     public void Create(Player player, City city)
     {
         bool flag = true;
@@ -27,7 +28,7 @@ public class Tavern: IImprovableBuilding
             player.Stone -= StoneToCreate;
             player.Wood -= WoodToCreate;
             city.CityBuildings.Add(this);
-            city.PlaceObject(x, y, new Square(Name, 1, 1, 1, 1));
+            city.PlaceObject(x, y, new Square(Designation, 1, 1, 1, 1));
             Console.WriteLine("1 - improve Movement Range, 2 - lower fines");
             var a = Convert.ToInt16(Console.ReadLine());
             switch (a)
@@ -42,12 +43,20 @@ public class Tavern: IImprovableBuilding
                     city.TavernBonus += 0.5;
                     break;
             }
+            Level += 1;
         }
     }
 
     public void Output()
     {
-        Console.WriteLine($"{Name}: level {Level}");
+        if (Level > 0)
+        {
+            Console.WriteLine($"{Name}: level {Level}, wood - {WoodToImprove}, stone - {StoneToImprove} - {Designation}");
+        }
+        else
+        {
+            Console.WriteLine($"{Name}: wood - {WoodToCreate}, stone - {StoneToCreate} - {Designation}");
+        }
     }
 
     public void Improve(Player player, City city)

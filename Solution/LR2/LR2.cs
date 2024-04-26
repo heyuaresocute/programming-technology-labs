@@ -110,6 +110,12 @@ namespace LR2
                     var market = (Market)building;
                     market.AskToChangeMaterials(player);
                 }
+
+                if (building is Handicraft)
+                {
+                    var handicraft = (Handicraft)building;
+                    handicraft.GiveMoney(player);
+                }
             }
             Console.WriteLine("1 - build something, 2 - update building, 3 - skip");
             var a = Convert.ToInt16(Console.ReadLine());
@@ -200,14 +206,14 @@ namespace LR2
                     }
                     else
                     {
-                        if (player.Stone < building.StoneToImprove || player.Wood < building.WoodToImprove )
+                        var buildingAsImprovable = (IImprovableBuilding)building;
+                        if (player.Stone < buildingAsImprovable.StoneToImprove || player.Wood < buildingAsImprovable.WoodToImprove )
                         {
                             Console.WriteLine("You cant improve this");
                             AddBuilding(city);
                         }
                         else
                         {
-                            var buildingAsImprovable = (IImprovableBuilding)building;
                             buildingAsImprovable.Improve(player, city);
                         }
                     }
@@ -218,7 +224,9 @@ namespace LR2
         private static void AddBuilding(City city)
         {
             var player = city.Players[0];
-            Console.WriteLine("Choose the building: h - hospital, b - blacksmith, a - arsenal, t - tavern, m - market"); // TODO add buildings
+            Console.WriteLine("Choose the building: "); // TODO add buildings
+            var buildingsCollection = GetBuildingsCollection();
+            OutputList(buildingsCollection);
             var a = Console.ReadLine();
             if (a == null)
             {
@@ -249,10 +257,10 @@ namespace LR2
 
         private static IBuilding? FindBuilding(string s)
         {
-            List<IBuilding> buildingsCollection = GetBuildingsCollection();
-            foreach (var building in buildingsCollection.Where(building => building.Name == s))
+            List<IData> buildingsCollection = GetBuildingsCollection();
+            foreach (var building in buildingsCollection.Where(building => building.Designation == s))
             {
-                return building;
+                return (IBuilding) building;
             }
             return null;
         }
@@ -429,14 +437,16 @@ namespace LR2
             }
         }
 
-        private static List<IBuilding> GetBuildingsCollection()
+        private static List<IData> GetBuildingsCollection()
         {
-            List<IBuilding> buildingsCollection = [];
+            List<IData> buildingsCollection = [];
             buildingsCollection.Add(new Hospital());
             buildingsCollection.Add(new Blacksmith());
             buildingsCollection.Add(new Arsenal());
             buildingsCollection.Add(new Tavern());
             buildingsCollection.Add(new Market());
+            buildingsCollection.Add(new Academy());
+            buildingsCollection.Add(new Handicraft());
             return buildingsCollection;
         }
     }

@@ -1,13 +1,12 @@
 namespace LR2.Interfaces;
 
-public interface IBuilding
+public interface IBuilding: IData
 {
+    new string Designation { get;  }
     string Name { get;  }
     int WoodToCreate { get; }
-    int WoodToImprove { get; }
     int StoneToCreate { get; }
-    int StoneToImprove { get; }
     int Level {get; set; }
     void Create(Player player, City city);
-    void Output();
+    new void Output();
 }

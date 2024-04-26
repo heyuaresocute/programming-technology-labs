@@ -2,21 +2,29 @@ using LR2.Interfaces;
 
 namespace LR2.Buildings;
 
-public class Arsenal: IImprovableBuilding
+public class Handicraft: IImprovableBuilding
 {
-    public string Designation { get; set; } = "a";
-    public string Name { get; } = "Arsenal";
-    public int WoodToCreate { get; } = 3;
-    public int WoodToImprove { get; } = 2;
+    public string Designation { get; set; } = "r";
+    public string Name { get; } = "Handicraft";
+    public int WoodToCreate { get; } = 10;
+    public int WoodToImprove { get; } = 5;
     public int StoneToCreate { get; } = 16;
     public int StoneToImprove { get; } = 8;
     public int Level { get; set; }
+
+    public const int Cash = 10;
     public void Create(Player player, City city)
     {
         bool flag = true;
-        foreach (var building in city.CityBuildings.OfType<Arsenal>())
+        var count = 0;
+        foreach (var building in city.CityBuildings.OfType<Handicraft>())
         {
-            Console.WriteLine("You can have only 1 arsenal");
+            count += 1;
+        }
+
+        if (count >= 4)
+        {
+            Console.WriteLine("You can have only 4 hadicrafts");
             flag = false;
         }
 
@@ -29,10 +37,6 @@ public class Arsenal: IImprovableBuilding
             player.Wood -= WoodToCreate;
             city.CityBuildings.Add(this);
             city.PlaceObject(x, y, new Square(Designation, 1, 1, 1, 1));
-            foreach (var unit in player.Units)
-            {
-                unit.Defence += 1;
-            }
 
             Level += 1;
         }
@@ -49,11 +53,12 @@ public class Arsenal: IImprovableBuilding
     {
         player.Wood -= WoodToImprove;
         player.Stone -= StoneToImprove;
-        foreach (var unit in player.Units)
-        {
-            unit.Defence += 1;
-        }
         Level += 1;
-        Console.WriteLine($"Now Arsenal level is {Level}");
+        Console.WriteLine($"Now your handicraft has {Level} crafters");
+    }
+
+    public void GiveMoney(Player player)
+    {
+        player.Cash += Cash * Level;
     }
 }

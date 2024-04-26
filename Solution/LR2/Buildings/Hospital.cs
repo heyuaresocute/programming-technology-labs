@@ -4,9 +4,10 @@ namespace LR2.Buildings;
 
 public class Hospital: IImprovableBuilding
 {
-    public string Name { get; set; } = "h";
+    public string Designation { get; set; } = "h";
+    public string Name { get; } = "Hospital";
     public int StoneToImprove { get; } = 5;
-    public int Level { get; set; } = 1;
+    public int Level { get; set; } = 0;
     public int WoodToCreate { get; } = 10;
     public int WoodToImprove { get; } = 5;
     public int StoneToCreate { get; } = 10;
@@ -27,17 +28,26 @@ public class Hospital: IImprovableBuilding
             player.Stone -= StoneToCreate;
             player.Wood -= WoodToCreate;
             city.CityBuildings.Add(this);
-            city.PlaceObject(x, y, new Square(Name, 1, 1, 1, 1));
+            city.PlaceObject(x, y, new Square(Designation, 1, 1, 1, 1));
             foreach (var unit in player.Units)
             {
                 unit.Health += 1;
             }
+
+            Level += 1;
         }
     }
 
     public void Output()
     {
-        Console.WriteLine($"{Name}: level {Level}");
+        if (Level > 0)
+        {
+            Console.WriteLine($"{Name}: level {Level}, wood - {WoodToImprove}, stone - {StoneToImprove} - {Designation}");
+        }
+        else
+        {
+            Console.WriteLine($"{Name}: wood - {WoodToCreate}, stone - {StoneToCreate} - {Designation}");
+        }
     }
 
     public void Improve(Player player, City city)
