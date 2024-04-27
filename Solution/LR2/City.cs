@@ -231,7 +231,19 @@ public class City(int catChance, Map map)
             }
             PlaceObject(obstacle.X, obstacle.Y, new Square(obstacle.Designation, obstacleProperties.InfantryFine, obstacleProperties.HorseFine, obstacleProperties.ArcherFine, obstacleProperties.CatFine));
         }
-        
+    }
+    
+    private static List<IBuilding> GetBuildingsCollection()
+    {
+        List<IBuilding> buildingsCollection = [];
+        buildingsCollection.Add(new Hospital());
+        buildingsCollection.Add(new Blacksmith());
+        buildingsCollection.Add(new Arsenal());
+        buildingsCollection.Add(new Tavern());
+        buildingsCollection.Add(new Market());
+        buildingsCollection.Add(new Academy());
+        buildingsCollection.Add(new Handicraft());
+        return buildingsCollection;
     }
 
     public void PlaceObject(int x, int y, Square object1)
@@ -253,6 +265,7 @@ public class City(int catChance, Map map)
         var obstacles = JsonConvert.DeserializeObject<List<ObstacleType>>(json)!;
         return obstacles!;
     }
+    
     
     public static string GetPathToFile(string filename)
     {

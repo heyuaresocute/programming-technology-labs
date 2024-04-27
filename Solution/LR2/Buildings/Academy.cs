@@ -1,5 +1,6 @@
 using LR2.Factories;
 using LR2.Interfaces;
+using Newtonsoft.Json;
 
 namespace LR2.Buildings;
 
@@ -10,8 +11,12 @@ public class Academy: IBuilding
     public int WoodToCreate { get; } = 10;
     public int WoodToImprove { get; } = 5;
     public int StoneToCreate { get; } = 16;
+    public int X { get; set; }
+    public int Y { get; set; }
     public int StoneToImprove { get; } = 8;
     public int Level { get; set; }
+    private const string PathToJsons =
+        "/Users/heyuaresocute/projects/programming-technology-labs/Solution/LR3/jsons/";
     public void Create(Player player, City city)
     {
         bool flag = true;
@@ -25,13 +30,12 @@ public class Academy: IBuilding
         {
             AskForUnit(player, city);
             Console.WriteLine("Choose the coordinates X Y: ");
-            var x = Convert.ToInt32(Console.ReadLine());
-            var y = Convert.ToInt32(Console.ReadLine());
+            X = Convert.ToInt32(Console.ReadLine());
+            Y = Convert.ToInt32(Console.ReadLine());
             player.Stone -= StoneToCreate;
             player.Wood -= WoodToCreate;
             city.CityBuildings.Add(this);
-            city.PlaceObject(x, y, new Square(Designation, 1, 1, 1, 1));
-            Level += 1;
+            city.PlaceObject(X, Y, new Square(Designation, 1, 1, 1, 1));
         }
     }
 
@@ -76,25 +80,40 @@ public class Academy: IBuilding
             {
                 case 1:
                     var factory = new UnitsFactory(city);
+                    Dictionary<string, string?> dictionary = new()
+                    {
+                        { "x", Convert.ToString(city.Cols - 4) },
+                        { "y", Convert.ToString(city.Rows - 4) },
+                        { "name", name },
+                        { "health", Convert.ToString(health) },
+                        { "attackDamage", Convert.ToString(attackDamage) },
+                        { "attackRange", Convert.ToString(attackRange) },
+                        { "defence", Convert.ToString(defence) },
+                        { "movementRange", Convert.ToString(movementRange) },
+                        { "type", type }
+                    };
                     if (type == "i")
                     {
-                        var unit = factory.CreateNewInfantry(2, 2, name, health, attackDamage, attackRange, defence, movementRange,
-                            cost);
+                        var unit = factory.CreateNewInfantry(city.Cols - 4, city.Rows - 4, name, health, attackDamage, attackRange, defence, movementRange);
                         player.Units.Add(unit);
+                        dictionary["type"] = type;
+                        PutInFile("units.json", dictionary);
                     }
 
                     if (type == "h")
                     {
-                        var unit = factory.CreateNewHorse(2, 2, name, health, attackDamage, attackRange, defence, movementRange,
-                            cost);
+                        dictionary[type] = type;
+                        var unit = factory.CreateNewHorse(2, 2, name, health, attackDamage, attackRange, defence, movementRange);
                         player.Units.Add(unit);
+                        PutInFile("units.json", dictionary);
                     }
 
                     if (type == "a")
                     {
-                        var unit = factory.CreateNewArcher(2, 2, name, health, attackDamage, attackRange, defence, movementRange,
-                            cost);
+                        dictionary[type] = type;
+                        var unit = factory.CreateNewArcher(2, 2, name, health, attackDamage, attackRange, defence, movementRange);
                         player.Units.Add(unit);
+                        PutInFile("units.json", dictionary);
                     }
                     break;
                 case 2:
@@ -129,5 +148,16 @@ public class Academy: IBuilding
         {
             Console.WriteLine($"{Name}: wood - {WoodToCreate}, stone - {StoneToCreate} - {Designation}");
         }
+    }
+    
+    private static string GetPathToFile(string filename)
+    {
+        return PathToJsons + filename;
+    }
+
+    private static void PutInFile<T>(string filename, T data)
+    {
+        string json = JsonConvert.SerializeObject(data);
+        File.WriteAllText(GetPathToFile(filename), json);
     }
 }

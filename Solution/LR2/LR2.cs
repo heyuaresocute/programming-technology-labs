@@ -143,6 +143,7 @@ namespace LR2
                 case 2:
                     Console.WriteLine("Choose your opponent's unit: ");
                     var opponentsUnit = AskForUnit(opponent.Units);
+                    var health = opponentsUnit.Health;
                     unit.DoAttack(opponentsUnit);
                     if (!opponentsUnit.IsAlive())
                     {
@@ -154,9 +155,12 @@ namespace LR2
                     }
                     else
                     {
-                        Console.WriteLine("You owned 1 wood and 1 stone");
-                        player.Wood += 1;
-                        player.Stone += 1;
+                        if (opponentsUnit.Health < health)
+                        {
+                            Console.WriteLine("You owned 1 wood and 1 stone");
+                            player.Wood += 1;
+                            player.Stone += 1;
+                        }
                     }
                     break;
                 case 3:
@@ -199,23 +203,28 @@ namespace LR2
                 }
                 else
                 {
-                    IBuilding? building = FindBuilding(a);
-                    if (building == null)
+                    var flag = false;
+                    foreach (var building1 in buildings)
+                    {
+                        if (building1.Designation == a)
+                        {
+                            flag = true;
+                            var buildingAsImprovable = (IImprovableBuilding)building1;
+                            if (player.Stone < buildingAsImprovable.StoneToImprove || player.Wood < buildingAsImprovable.WoodToImprove )
+                            {
+                                Console.WriteLine("You cant improve this");
+                                AddBuilding(city);
+                            }
+                            else
+                            {
+                                buildingAsImprovable.Improve(player, city);
+                            }
+                        }
+                    }
+
+                    if (!flag)
                     {
                         ImproveBuilding(city);
-                    }
-                    else
-                    {
-                        var buildingAsImprovable = (IImprovableBuilding)building;
-                        if (player.Stone < buildingAsImprovable.StoneToImprove || player.Wood < buildingAsImprovable.WoodToImprove )
-                        {
-                            Console.WriteLine("You cant improve this");
-                            AddBuilding(city);
-                        }
-                        else
-                        {
-                            buildingAsImprovable.Improve(player, city);
-                        }
                     }
                 }
             }
@@ -423,10 +432,16 @@ namespace LR2
             }
             return AskForUnit(units);
         }
-        
-        public static string GetPathToFile(string filename)
+
+        private static string GetPathToFile(string filename)
         {
             return PathToJsons + filename;
+        }
+
+        public static void PutInFile<T>(string filename, T data)
+        {
+            string json = JsonConvert.SerializeObject(data);
+            File.WriteAllText(GetPathToFile(filename), json);
         }
         
         private static void OutputList(List<IData> list)

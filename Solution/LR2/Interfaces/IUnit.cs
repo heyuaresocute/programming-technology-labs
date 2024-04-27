@@ -3,7 +3,7 @@ namespace LR2.Interfaces;
 public interface IUnit
 {
     string Name{ get; }
-    string ShortName { get; }
+    string ShortName { get; set; }
     int Health { get; set; }
     int AttackDamage { get; set; }
     int AttackRange { get; set; }

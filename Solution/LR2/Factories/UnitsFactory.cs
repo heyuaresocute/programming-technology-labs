@@ -27,9 +27,9 @@ public class UnitsFactory(City city)
     }
 
     public InfantryUnit CreateNewInfantry(int x, int y, string name, short health, short attackDamage, short attackRange,
-        short defence, short movementRange, int cost)
+        short defence, short movementRange)
     {
-        var unit = new InfantryUnit(name, health, attackDamage, attackRange, defence, movementRange, cost, x, y, "4");
+        var unit = new InfantryUnit(name, health, attackDamage, attackRange, defence, movementRange, 0, x, y, "4");
         city.PlaceObject(unit.X, unit.Y, new Square(unit.ShortName, 1, 1, 1, 1));
         return unit;
     }
@@ -63,9 +63,9 @@ public class UnitsFactory(City city)
     }
     
     public ArcherUnit CreateNewArcher(int x, int y, string name, short health, short attackDamage, short attackRange,
-        short defence, short movementRange, int cost)
+        short defence, short movementRange)
     {
-        var unit = new ArcherUnit(name, health, attackDamage, attackRange, defence, movementRange, cost, x, y, "4");
+        var unit = new ArcherUnit(name, health, attackDamage, attackRange, defence, movementRange, 0, x, y, "4");
         city.PlaceObject(unit.X, unit.Y, new Square(unit.ShortName, 1, 1, 1, 1));
         return unit;
     }
@@ -92,9 +92,9 @@ public class UnitsFactory(City city)
     }
     
     public HorseUnit CreateNewHorse(int x, int y, string name, short health, short attackDamage, short attackRange,
-        short defence, short movementRange, int cost)
+        short defence, short movementRange)
     {
-        var unit = new HorseUnit(name, health, attackDamage, attackRange, defence, movementRange, cost, x, y, "4");
+        var unit = new HorseUnit(name, health, attackDamage, attackRange, defence, movementRange, 0, x, y, "4");
         city.PlaceObject(unit.X, unit.Y, new Square(unit.ShortName, 1, 1, 1, 1));
         return unit;
     }

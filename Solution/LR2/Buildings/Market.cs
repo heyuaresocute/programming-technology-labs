@@ -1,4 +1,5 @@
 using LR2.Interfaces;
+using Newtonsoft.Json;
 
 namespace LR2.Buildings;
 
@@ -8,6 +9,8 @@ public class Market: IBuilding
     public string Name { get; } = "Market";
     public int WoodToCreate { get; } = 5;
     public int StoneToCreate { get; } = 5;
+    public int X { get; set; }
+    public int Y { get; set; }
     public int Level { get; set; } = 0;
     public void Create(Player player, City city)
     {
@@ -25,7 +28,9 @@ public class Market: IBuilding
             player.Stone -= StoneToCreate;
             player.Wood -= WoodToCreate;
             city.CityBuildings.Add(this);
-            city.PlaceObject(x, y, new Square(Designation, 1, 1, 1, 1));
+            city.PlaceObject(X, Y, new Square(Designation, 1, 1, 1, 1));
+            city.CityBuildings.Add(this);
+            city.PlaceObject(X, Y, new Square(Designation, 1, 1, 1, 1));
             city.OutputCity();
             AskToChangeMaterials(player);
             Level += 1;

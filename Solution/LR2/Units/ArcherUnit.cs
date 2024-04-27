@@ -5,7 +5,7 @@ namespace LR2.Units;
 public class ArcherUnit(string name, int health, int attackNumber, int attackRange, int defence, int movementRange, int cost, int y, int x, string id): IUnit
 {
     public string Name { get; } = name;
-    public string ShortName { get; } = id;
+    public string ShortName { get; set; } = id;
     public int Health { get; set; } = health;
     public int AttackDamage { get; set; } = attackNumber;
     public int AttackRange { get; set; } = attackRange;

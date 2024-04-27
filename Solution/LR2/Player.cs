@@ -1,5 +1,8 @@
 using LR2.Factories;
 using LR2.Interfaces;
+using LR2.Units;
+using Newtonsoft.Json;
+using Random = System.Random;
 
 namespace LR2;
 
@@ -12,6 +15,9 @@ public class Player(int cash, int wood, int stone, string type)
     public int Wood { get; set; } = wood;
 
     public int Stone { get; set; } = stone;
+    
+    private const string PathToJsons =
+        "/Users/heyuaresocute/projects/programming-technology-labs/Solution/LR3/jsons/";
     
     public void SelectUnits(UnitsFactory factory, City city)
     {
@@ -62,7 +68,31 @@ public class Player(int cash, int wood, int stone, string type)
                     Console.WriteLine($"You can't select {unit.Name}, because your cash now is {Cash}");
                 }
             }
-            
+        }
+        Dictionary<string, string?>? units = GetUnits();
+        if (units != null & Type == "You")
+        {
+            if (units["type"] == "i")
+            {
+                var unit1 = factory.CreateNewInfantry(city.Rows - 1, city.Cols - 4, units["name"]!, Convert.ToInt16(units["health"]), Convert.ToInt16(units["attackDamage"]), Convert.ToInt16(units["attackRange"]), Convert.ToInt16(units["defence"]), Convert.ToInt16(units["movementRange"]));
+                city.PlaceObject(unit1.X, unit1.Y, new Square(unit1.ShortName, 1, 1, 1, 1));
+                Units.Add(unit1);
+                Console.WriteLine($"{unit1.Name} added");
+            }
+            if (units["type"] == "a")
+            {
+                var unit1 = factory.CreateNewArcher(city.Rows - 1, city.Cols - 4, units["name"]!, Convert.ToInt16(units["health"]), Convert.ToInt16(units["attackDamage"]), Convert.ToInt16(units["attackRange"]), Convert.ToInt16(units["defence"]), Convert.ToInt16(units["movementRange"]));
+                city.PlaceObject(unit1.X, unit1.Y, new Square(unit1.ShortName, 1, 1, 1, 1));
+                Units.Add(unit1);
+                Console.WriteLine($"{unit1.Name} added");
+            }
+            if (units["type"] == "h")
+            {
+                var unit1 = factory.CreateNewHorse(city.Rows - 1, city.Cols - 4, units["name"]!, Convert.ToInt16(units["health"]), Convert.ToInt16(units["attackDamage"]), Convert.ToInt16(units["attackRange"]), Convert.ToInt16(units["defence"]), Convert.ToInt16(units["movementRange"]));
+                city.PlaceObject(unit1.X, unit1.Y, new Square(unit1.ShortName, 1, 1, 1, 1));
+                Units.Add(unit1);
+                Console.WriteLine($"{unit1.Name} added");
+            }
         }
     }
 
@@ -117,5 +147,25 @@ public class Player(int cash, int wood, int stone, string type)
     public IUnit[]? GetAnimal(City city)
     {
         return (from unit in Units from animal in city.Animals.Where(animal => animal.CheckAvailabilityOfFeeder(unit)) select (IUnit[]?) [unit, animal]).FirstOrDefault();
+    }
+    
+    private static Dictionary<string, string?>? GetUnits()
+    {
+        try
+        {
+            string json = File.ReadAllText(GetPathToFile("units.json"));
+            var unit = JsonConvert.DeserializeObject<Dictionary<string, string?>>(json);
+            return unit;
+        }
+        catch
+        {
+            return null;
+        }
+        
+    }
+    
+    public static string GetPathToFile(string filename)
+    {
+        return PathToJsons + filename;
     }
 }
