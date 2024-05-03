@@ -57,7 +57,8 @@ public class City(int catChance, Map map)
                 return Convert.ToInt32(wayrange);
             }
 
-            var fine = CityObjects[y][x].GetFine(unit) - TavernBonus;
+            double fine = 1;
+            fine = CityObjects[y][x].GetFine(unit) - TavernBonus;
             if (fine < 1)
             {
                 fine = 1;
@@ -251,7 +252,7 @@ public class City(int catChance, Map map)
         CityObjects[y][x] = object1;
     }
 
-    private static Square[][] GenerateMatrix(int cols, int rows)
+    public static Square[][] GenerateMatrix(int cols, int rows)
     {
         Square[][] result = new Square[rows][];
         for (var i = 0; i < rows; ++i)

@@ -1,4 +1,18 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=37869188_002Defd0_002D495a_002Db742_002D6dfc22286437/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="OpponentWinTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::C68BDFE0-612F-47FA-897F-EA7300929DAC::net8.0::LR4Tests.FinishGameTests&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::C68BDFE0-612F-47FA-897F-EA7300929DAC::net8.0::LR4Tests.FineTests.InfantryTest&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::C68BDFE0-612F-47FA-897F-EA7300929DAC::net8.0::LR4Tests.FineTests.ArcherTest&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::C68BDFE0-612F-47FA-897F-EA7300929DAC::net8.0::LR4Tests.FineTests.HorseTest&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::C68BDFE0-612F-47FA-897F-EA7300929DAC::net8.0::LR4Tests.FineTests.CatTest&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::C68BDFE0-612F-47FA-897F-EA7300929DAC::net8.0::LR4Tests.FineTests&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::C68BDFE0-612F-47FA-897F-EA7300929DAC::net8.0::LR4Tests.AttackRangeTests.CantAtack&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::C68BDFE0-612F-47FA-897F-EA7300929DAC::net8.0::LR4Tests.AttackRangeTests.CanAtack&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::C68BDFE0-612F-47FA-897F-EA7300929DAC::net8.0::LR4Tests.AttackTests.Attack&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::C68BDFE0-612F-47FA-897F-EA7300929DAC::net8.0::LR4Tests.MovementTests.CollisionTest&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Selecter/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=startcash/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=wayrange/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
