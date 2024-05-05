@@ -141,7 +141,7 @@ public class Game
         }
     }
 
-    private static void OpponentsStep(City city)
+    public static void OpponentsStep(City city)
     {
         var player = city.Players[0];
         var opponent = city.Players[1];
