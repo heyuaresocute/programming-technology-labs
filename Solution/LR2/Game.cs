@@ -106,26 +106,7 @@ public class Game
             case 2:
                 Console.WriteLine("Choose your opponent's unit: ");
                 var opponentsUnit = AskForUnit(opponent.Units);
-                var health = opponentsUnit.Health;
-                unit.DoAttack(opponentsUnit);
-                if (!opponentsUnit.IsAlive())
-                {
-                    Console.WriteLine($"You killed your opponent's {opponentsUnit.Name}");
-                    Console.WriteLine($"You owned {opponentsUnit.Wood} wood and {opponentsUnit.Stone} stone");
-                    player.Wood += opponentsUnit.Wood;
-                    player.Stone += opponentsUnit.Stone;
-                    opponent.RemoveUnit(opponentsUnit, city);
-                }
-                else
-                {
-                    if (opponentsUnit.Health < health)
-                    {
-                        Console.WriteLine("You owned 1 wood and 1 stone");
-                        player.Wood += 1;
-                        player.Stone += 1;
-                    }
-                }
-
+                AttackUnit(city, unit, player, opponent, opponentsUnit);
                 break;
             case 3:
                 break;
@@ -134,6 +115,29 @@ public class Game
                 var animal1 = (IAnimal)animal![1];
                 animal1.Eat(player);
                 break;
+        }
+    }
+
+    public static void AttackUnit(City city, IUnit unit, Player player, Player opponent, IUnit opponentsUnit)
+    {
+        var health = opponentsUnit.Health;
+        unit.DoAttack(opponentsUnit);
+        if (!opponentsUnit.IsAlive())
+        {
+            Console.WriteLine($"You killed your opponent's {opponentsUnit.Name}");
+            Console.WriteLine($"You owned {opponentsUnit.Wood} wood and {opponentsUnit.Stone} stone");
+            player.Wood += opponentsUnit.Wood;
+            player.Stone += opponentsUnit.Stone;
+            opponent.RemoveUnit(opponentsUnit, city);
+        }
+        else
+        {
+            if (opponentsUnit.Health < health)
+            {
+                Console.WriteLine("You owned 1 wood and 1 stone");
+                player.Wood += 1;
+                player.Stone += 1;
+            }
         }
     }
 

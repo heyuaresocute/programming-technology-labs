@@ -42,8 +42,8 @@ namespace LR2
             city.Players.Add(opponent);
             var unitsFactory = new UnitsFactory(city);
             Console.WriteLine($"Your start cash is {startcash}. Choose your units (select 3): ");
-            player.SelectUnits(unitsFactory, city);
-            opponent.SelectUnits(unitsFactory, city);
+            player.PlaceUnits(city);
+            opponent.PlaceUnits(city);
             Game.Start(city);
         }
 

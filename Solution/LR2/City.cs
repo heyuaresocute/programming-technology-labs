@@ -163,6 +163,7 @@ public class City(int catChance, Map map)
         _factory = new UnitsFactory(this);
         CityObjects = GenerateMatrix(Cols, Rows);
         FillTheCity();
+        PlaceAllObjects();
     }
 
     public void OutputCity()
@@ -202,7 +203,7 @@ public class City(int catChance, Map map)
         }
     }
 
-    private void FillTheCity()
+    public void FillTheCity()
     {
         for (var i = 0; i < Cols; i++)
         {
@@ -211,6 +212,10 @@ public class City(int catChance, Map map)
                 CityObjects[i][j] = new Square("*", 1, 1, 1, 1);
             }
         }
+    }
+
+    private void PlaceAllObjects()
+    {
         List<ObstacleType> obstacleTypes = GetObstacles();
         foreach (var obstacle in Map.Obstacles)
         {
@@ -233,7 +238,7 @@ public class City(int catChance, Map map)
             PlaceObject(obstacle.X, obstacle.Y, new Square(obstacle.Designation, obstacleProperties.InfantryFine, obstacleProperties.HorseFine, obstacleProperties.ArcherFine, obstacleProperties.CatFine));
         }
     }
-    
+
     private static List<IBuilding> GetBuildingsCollection()
     {
         List<IBuilding> buildingsCollection = [];

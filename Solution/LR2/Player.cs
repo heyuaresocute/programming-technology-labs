@@ -19,74 +19,78 @@ public class Player(int cash, int wood, int stone, string type)
     private const string PathToJsons =
         "/Users/heyuaresocute/projects/programming-technology-labs/Solution/LR3/jsons/";
     
-    public void SelectUnits(UnitsFactory factory, City city)
+    public void PlaceUnits(City city)
     {
-        var count = 0;
-        int unitId = 1;
-        IUnit unit;
+        var factory = new UnitsFactory(city);
         if (Type == "You")
         {
-            Console.WriteLine("Select your units (select 3):");
-        }
-        while (count < 3)
-        {
-            switch (Type)
+            Console.WriteLine("Write indexes of units (like 1 2 3)");
+            var indexes = Console.ReadLine();
+            if (indexes != null & indexes!.Length == 5)
             {
-                default:
+                var indexesArr = Array.ConvertAll(indexes.Trim().Split(' '),Convert.ToInt32);
+                var answer = CheckCash(city, indexesArr);
+                if (answer)
                 {
-                    unit = Selecter(factory, unitId, 0, count, $"{count + 7}");
-                    break;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var unit = Selecter(factory, indexesArr[i], city.Cols - 1, city.Rows - 1 - i, $"{i + 1}");
+                        Units.Add(unit);
+                        Cash -= unit.Cost;
+                    }
                 }
-                case "Opponent":
+                else
                 {
-                    Random rnd = new Random();
-                    unitId = rnd.Next(1, 9);
-                    unit = Selecter(factory, unitId, 0, count, $"{count + 7}");
-                    break;
-                }
-                case "You":
-                    unitId = Convert.ToInt32(Console.ReadLine());
-                    unit = Selecter(factory, unitId, city.Cols - 1, city.Rows - 1 - count, $"{count + 1}");
-                    break;
-            }
-            Cash -= unit.Cost;
-            if (Cash >= 0)
-            {
-                Units.Add(unit);
-                count += 1;
-                if (Type == "You")
-                {
-                    Console.WriteLine($"{unit.Name} selected, your cash now is {Cash}");
+                    PlaceUnits(city);
                 }
             }
             else
             {
-                Cash += unit.Cost;
-                city.PlaceObject(unit.X, unit.Y, new Square("*", 1, 1, 1, 1));
-                if (Type == "You")
+                PlaceUnits(city);
+            }
+        }
+        if (Type == "Opponent")
+        {
+            Random rnd = new Random();
+            int[] indexesArr = {1, 2, 3};
+            for (int i = 0; i < 3; i++)
+            {
+                indexesArr[i] = rnd.Next(1, 9);
+            }
+            var answer = CheckCash(city, indexesArr);
+            if (answer)
+            {
+                for (int i = 0; i < 3; i++)
                 {
-                    Console.WriteLine($"You can't select {unit.Name}, because your cash now is {Cash}");
+                    var unit = Selecter(factory,indexesArr[i], 0, i, $"{i + 7}");
+                    Units.Add(unit);
+                    Cash -= unit.Cost;
                 }
+                
+            }
+            else
+            {
+                PlaceUnits(city);
             }
         }
         Dictionary<string, string?>? units = GetUnits();
         if (units != null & Type == "You")
         {
-            if (units["type"] == "i")
+            if (units?["type"] == "i")
             {
                 var unit1 = factory.CreateNewInfantry(city.Rows - 1, city.Cols - 4, units["name"]!, Convert.ToInt16(units["health"]), Convert.ToInt16(units["attackDamage"]), Convert.ToInt16(units["attackRange"]), Convert.ToInt16(units["defence"]), Convert.ToInt16(units["movementRange"]));
                 city.PlaceObject(unit1.X, unit1.Y, new Square(unit1.ShortName, 1, 1, 1, 1));
                 Units.Add(unit1);
                 Console.WriteLine($"{unit1.Name} added");
             }
-            if (units["type"] == "a")
+            if (units?["type"] == "a")
             {
                 var unit1 = factory.CreateNewArcher(city.Rows - 1, city.Cols - 4, units["name"]!, Convert.ToInt16(units["health"]), Convert.ToInt16(units["attackDamage"]), Convert.ToInt16(units["attackRange"]), Convert.ToInt16(units["defence"]), Convert.ToInt16(units["movementRange"]));
                 city.PlaceObject(unit1.X, unit1.Y, new Square(unit1.ShortName, 1, 1, 1, 1));
                 Units.Add(unit1);
                 Console.WriteLine($"{unit1.Name} added");
             }
-            if (units["type"] == "h")
+            if (units?["type"] == "h")
             {
                 var unit1 = factory.CreateNewHorse(city.Rows - 1, city.Cols - 4, units["name"]!, Convert.ToInt16(units["health"]), Convert.ToInt16(units["attackDamage"]), Convert.ToInt16(units["attackRange"]), Convert.ToInt16(units["defence"]), Convert.ToInt16(units["movementRange"]));
                 city.PlaceObject(unit1.X, unit1.Y, new Square(unit1.ShortName, 1, 1, 1, 1));
@@ -94,6 +98,15 @@ public class Player(int cash, int wood, int stone, string type)
                 Console.WriteLine($"{unit1.Name} added");
             }
         }
+    }
+
+    public bool CheckCash(City city, int[] indexes)
+    {
+        var factory = new UnitsFactory(city);
+        var firstUnit = Selecter(factory,Convert.ToInt16(indexes[0]), city.Cols - 1, city.Rows - 1, "1");
+        var secondUnit = Selecter(factory,Convert.ToInt16(indexes[1]), city.Cols - 1, city.Rows - 2, "2");
+        var thirdUnit = Selecter(factory,Convert.ToInt16(indexes[2]), city.Cols - 1, city.Rows - 3, "3");
+        return firstUnit.Cost + secondUnit.Cost + thirdUnit.Cost <= Cash;
     }
 
     public void OutputUnits()
@@ -104,7 +117,7 @@ public class Player(int cash, int wood, int stone, string type)
         }
     }
 
-    private static IUnit Selecter(UnitsFactory factory, int unitId, int x, int y, string id)
+    public IUnit Selecter(UnitsFactory factory, int unitId, int x, int y, string id)
     {
         switch (unitId)
         {
