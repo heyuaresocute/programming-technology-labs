@@ -1,5 +1,6 @@
 using LR2.Interfaces;
 using LR2.MapProperties;
+using NLog;
 
 namespace LR2.Animals;
 
@@ -53,8 +54,7 @@ public class Cat(
         }
         else
         {
-            var a = FindFeeder(city);
-            if (a)
+            if (FindFeeder(city))
             {
                 Console.WriteLine($"{Name} smelled the food. {Name} decided to wait");
             }
@@ -81,11 +81,10 @@ public class Cat(
                     unit.Health -= BleedingDamage;
                     unit.Bleed = 0;
                 }
-                if (!unit.IsAlive())
-                {
-                    player.RemoveUnit(unit, city);
-                    Console.WriteLine($"{player.Type}'s {unit.Name} died because of bleeding");
-                }
+
+                if (unit.IsAlive()) continue;
+                player.RemoveUnit(unit, city);
+                Console.WriteLine($"{player.Type}'s {unit.Name} died because of bleeding");
             }
         }
     }
@@ -126,6 +125,7 @@ public class Cat(
 
     public void Eat(Player player)
     {
+        Logger logger = LogManager.GetCurrentClassLogger();
         player.Cash -= 1;
         Cost -= 1;
         Console.WriteLine($"{player.Type} cash now is {player.Cash}.");
@@ -133,8 +133,10 @@ public class Cat(
         {
             case > 0:
                 Console.WriteLine($"{player.Type} need to feed {Name} {Cost} times");
+                logger.Info("the Сat was fed");
                 break;
             case 0:
+                logger.Info("the Сat was fed");
                 Owner = player;
                 Console.WriteLine($"Now {player.Type} are the owner of {Name}");
                 if (player.Type == "You")
@@ -144,6 +146,8 @@ public class Cat(
                 }
                 UpdateOwnersUnits(player);
                 Cost = 6;
+                logger.Warn($"The Cat belongs to {player.Type}");
+                LogManager.Shutdown();
                 break;
         }
     }

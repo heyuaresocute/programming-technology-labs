@@ -1,8 +1,8 @@
-﻿using LR2.Buildings;
-using LR2.Factories;
+﻿using LR2.Factories;
 using LR2.Interfaces;
 using LR2.MapProperties;
 using Newtonsoft.Json;
+using NLog;
 
 namespace LR2
 {
@@ -13,11 +13,11 @@ namespace LR2
 
         private static void Main()
         {
+            ConfigureLog();
             var startcash = 69;
             var catChanse = 100;
             var wood = 30;
             var stone = 30;
-            Game game = new Game();
             Console.WriteLine("Now you have this maps:");
             List<Map> maps = GetMaps();
             var mapsAsIData = new List<IData>(maps);
@@ -40,11 +40,18 @@ namespace LR2
             var opponent = new Player(startcash, wood, stone, "Opponent");
             city.Players.Add(player);
             city.Players.Add(opponent);
-            var unitsFactory = new UnitsFactory(city);
             Console.WriteLine($"Your start cash is {startcash}. Choose your units (select 3): ");
             player.PlaceUnits(city);
             opponent.PlaceUnits(city);
             Game.Start(city);
+        }
+
+        private static void ConfigureLog()
+        {
+            var config = new NLog.Config.LoggingConfiguration();
+            var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "cat.log" };
+            config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfile);
+            LogManager.Configuration = config;
         }
 
         private static List<Map> GetMaps()
@@ -58,7 +65,8 @@ namespace LR2
         {
             return PathToJsons + filename;
         }
-        public static void OutputList(List<IData> list)
+
+        private static void OutputList(List<IData> list)
         {
             foreach (var obj in list)
             {

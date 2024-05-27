@@ -9,11 +9,9 @@ public class Academy: IBuilding
     public string Designation { get; set; } = "c";
     public string Name { get; } = "Academy";
     public int WoodToCreate { get; } = 10;
-    public int WoodToImprove { get; } = 5;
     public int StoneToCreate { get; } = 16;
     public int X { get; set; }
     public int Y { get; set; }
-    public int StoneToImprove { get; } = 8;
     public int Level { get; set; }
     private const string PathToJsons =
         "/Users/heyuaresocute/projects/programming-technology-labs/Solution/LR3/jsons/";

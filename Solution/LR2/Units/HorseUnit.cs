@@ -11,8 +11,8 @@ public class HorseUnit(string name, int health, int attackNumber, int attackRang
     public int AttackRange { get; set; } = attackRange;
     public int Defence { get; set; } = defence;
     public int MovementRange { get; set; } = movementRange;
-    public int Y { get; set; } = y;
-    public int X { get; set; } = x;
+    public int Y { get; private set; } = y;
+    public int X { get; private set; } = x;
     public int Cost { get; set; } = cost;
     public int Bleed { get; set; } = 0;
     public int Stone { get; set; } = 10;

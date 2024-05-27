@@ -365,7 +365,7 @@ public class Game
     private static void AddBuilding(City city)
     {
         var player = city.Players[0];
-        Console.WriteLine("Choose the building: "); // TODO add buildings
+        Console.WriteLine("Choose the building: ");
         var buildingsCollection = GetBuildingsCollection();
         OutputList(buildingsCollection);
         var a = Console.ReadLine();
@@ -416,6 +416,7 @@ public class Game
         buildingsCollection.Add(new Market());
         buildingsCollection.Add(new Academy());
         buildingsCollection.Add(new Handicraft());
+        buildingsCollection.Add(new Alchemist());
         return buildingsCollection;
     }
 
