@@ -17,7 +17,27 @@ public class Alchemist: IImprovableBuilding
     public int StoneToImprove { get; } = 8;
     public void Improve(Player player, City city)
     {
-        
+        player.Wood -= WoodToImprove;
+        player.Stone -= StoneToImprove;
+        Level += 1;
+        Dictionary<string, int>? buildings = GetBuildings();
+        if (buildings != null & buildings!.ContainsKey(Designation))
+        {
+            buildings[Designation] = Level;
+            string json = JsonConvert.SerializeObject(buildings);
+            File.WriteAllText("/Users/heyuaresocute/projects/programming-technology-labs/Solution/LR3/jsons/buildings.json", json);
+        }
+        Console.WriteLine("Do you want to mutate cat? 1 - yes, 2 - no");
+            if(Console.ReadLine() == "1"){
+                if(PlayerHasEnoughMoney(player)){
+                    player.Cash -= 10;
+                    MutateCat(player, city);            
+                }
+                else{
+                    Console.WriteLine("You don't have enough money");
+                }
+            }
+        Console.WriteLine($"Now Alchemist level is {Level}");
     }
 
     public int Level { get; set; }
@@ -78,8 +98,22 @@ public class Alchemist: IImprovableBuilding
             }
             city.CityBuildings.Add(this);
             city.PlaceObject(X, Y, new Square(Designation, 1, 1, 1, 1));
-            MutateCat(player, city);
+            Console.WriteLine("Do you want to mutate cat? 1 - yes, 2 - no");
+            if(Console.ReadLine() == "1"){
+                if(PlayerHasEnoughMoney(player)){
+                    player.Cash -= 10;
+                    MutateCat(player, city);            
+                }
+                else{
+                    Console.WriteLine("You don't have enough money");
+                }
+            }
         }
+    }
+
+    private bool PlayerHasEnoughMoney(Player player)
+    {
+        return player.Cash - 10 > 0;
     }
 
     private void MutateCat(Player player, City city)
@@ -88,19 +122,36 @@ public class Alchemist: IImprovableBuilding
         {
             if (cat.Owner == player)
             {
-                var stats = GetStatsSum(cat);
-                int[] desiredStats = GetDesiredStats(stats);
+                var statsSum = GetStatsSum(cat);
+                int[] desiredStats = GetDesiredStats(statsSum);
+                cat.Health = desiredStats[0];
+                cat.Defence = desiredStats[1];
+                cat.AttackDamage = desiredStats[2];
+                cat.MovementRange = desiredStats[3];
+                cat.AttackRange = desiredStats[4];
+                
             }
         }
     }
 
-    private int[] GetDesiredStats(int stats)
+    private int[] GetDesiredStats(int statsSumm)
     {
-        var desiredStats = -1;
-        while (desiredStats != stats)
+        while (true)
         {
-            var indexesArr = Array.ConvertAll(indexes.Trim().Split(' '),Convert.ToInt32);
+            Console.WriteLine("Please, write the desired stats: Health, Defence, AttackDamage, MovementRange, AttackRange");
+            Console.WriteLine($"Your cat stats summ now is: {statsSumm}");
+            var indexesAsString = Console.ReadLine();
+            if(indexesAsString != null){
+                var desiredStatsArr = Array.ConvertAll(indexesAsString.Trim().Split(' '),Convert.ToInt32);
+                if (desiredStatsArr.Sum() == statsSumm & desiredStatsArr.Length == 5){
+                    return desiredStatsArr;
+                }
+                else {
+                    Console.WriteLine("You need to choose stats with the same summ");
+                }
+            }
         }
+            
     }
 
     private int GetStatsSum(Cat cat)
